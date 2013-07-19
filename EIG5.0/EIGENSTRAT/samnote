@@ -1,0 +1,18 @@
+convertf:
+  chimpmode
+  polarize  Y
+  pordercheck Y
+  flipstrandname Y  (contains list of snps to move to the opposite strand (reverse comp))
+  zerodistance  Y
+
+mergeit:
+  allowdups  Y  (dup ndivs in second set of data are ignored.  Else fatal error
+  malexhetA Y   (defualt NO;  default is YES for conveertf.  In default X hets for males are set ignore
+
+smartpca:
+  shrinkmode  NO
+  regmode   Y  (need documetnation and better name)
+  outliermode  Y   (2 => no outlier removal, 1 => calculate mean, s.dev with sample under consideration removed.
+  subroutines sqz() and rhoinv() are new too?  
+
+- Sam

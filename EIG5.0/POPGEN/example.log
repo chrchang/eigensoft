@@ -1,0 +1,86 @@
+parameter file: par.example
+### THE INPUT PARAMETERS
+##PARAMETER NAME: VALUE
+genotypename: ../CONVERTF/example.ped
+snpname: ../CONVERTF/example.map
+indivname: ../CONVERTF/example.ped
+evecoutname: example.evec
+evaloutname: example.eval
+altnormstyle: NO
+numoutevec: 2
+familynames: NO
+## smartpcax version: 10000
+norm used
+
+genotype file processed
+number of samples used: 5 number of snps used: 7
+total number of snps killed in pass: 0  used: 7
+
+## Tracy-Widom statistics: rows: 5  cols: 7
+  #N    eigenvalue  difference    twstat      p-value effect. n
+   1      3.145365          NA        NA           NA        NA
+   2      0.479177   -2.666188        NA           NA        NA
+   3      0.279889   -0.199289        NA           NA        NA
+   4      0.095570   -0.184319        NA           NA        NA
+    kurtosis           snps    indivs
+ eigenvector    1     1.271     1.505
+ eigenvector    2     1.796     2.127
+population:   0                 Case    2
+population:   1              Control    3
+
+## Average divergence between populations:
+                 Case    Control     popsize
+      Case      0.849      3.298           2
+   Control      3.298      1.151           3
+
+
+number of blocks for moving block jackknife: 1
+fst *1000:
+          C     C 
+   C      0     0
+   C      0     0
+
+s.dev * 1000000:
+          C     C 
+   C      0     0
+   C      0     0
+
+eigenvector 1:means
+             Control     -0.336
+                Case      0.505
+## Anova statistics for population differences along each eigenvector:
+                                              p-value
+             eigenvector_1_Case_Control_     0.0262738 
+eigenvector 2:means
+             Control     -0.056
+                Case      0.084
+             eigenvector_2_Case_Control_      0.805663 
+
+## Statistical significance of differences beween populations:
+                                pop1                  pop2      chisq          p-value   |pop1|   |pop2|
+popdifference:                  Case               Control         9.554    0.00842201       2       3
+
+eigbestsnp    1               rs3333 11       300000     1.390
+eigbestsnp    1               rs4444 11       400000     1.149
+eigbestsnp    1               rs6666 11       600000     1.120
+eigbestsnp    1               rs1111 11       100000     0.916
+eigbestsnp    1               rs5555 11       500000     0.767
+eigbestsnp    1               rs2222 11       200000     0.751
+eigbestsnp    1               rs0000 11            0     0.708
+eigbestsnp    1               rs0000 11            0    -1.000
+eigbestsnp    1               rs0000 11            0    -1.000
+eigbestsnp    1               rs0000 11            0    -1.000
+eigbestsnp    1               rs0000 11            0    -1.000
+eigbestsnp    2               rs1111 11       100000     1.837
+eigbestsnp    2               rs2222 11       200000     1.182
+eigbestsnp    2               rs6666 11       600000     0.867
+eigbestsnp    2               rs0000 11            0     0.845
+eigbestsnp    2               rs4444 11       400000     0.645
+eigbestsnp    2               rs3333 11       300000     0.488
+eigbestsnp    2               rs5555 11       500000     0.327
+eigbestsnp    2               rs0000 11            0    -1.000
+eigbestsnp    2               rs0000 11            0    -1.000
+eigbestsnp    2               rs0000 11            0    -1.000
+eigbestsnp    2               rs0000 11            0    -1.000
+packedancestrymap output
+##end of smartpca run
