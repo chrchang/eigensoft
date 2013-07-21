@@ -411,12 +411,9 @@ int main(int argc, char **argv)
 void readcommands(int argc, char **argv) 
 
 {
-  int i,haploid=0;
+  int i;
   char *parname = NULL ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n ;
 
   while ((i = getopt (argc, argv, "p:vV")) != -1) {
 
@@ -532,26 +529,26 @@ void remap(SNP **s1, int nums1, SNP **s2, int nums2)
   int i, k ;
   
   for (i=0; i<nums2; ++i)  { 
-   cupt2 = s2[i] ; 
-   k = snpindex(s1, nums1, cupt2 -> ID) ; 
-   if (k<0) { 
-    printf("%20s not found\n") ; 
-    cupt2 -> ignore = YES ;
-    continue ;
-   }
-   cupt1 = s1[k] ; 
-   fixaa(cupt1, cupt2) ;
-   if (cupt1 -> alleles[1] == 'X') {
-    cupt1 -> alleles[1] = cxx(cupt1 -> alleles, cupt2 -> alleles) ;
-   }
-   tcupt = *cupt2 ;
-   *cupt2 = *cupt1 ;
-   cupt = &tcupt ;
-   cupt2 -> chrom =   cupt -> chrom ; 
-   cupt2 -> genpos =  cupt -> genpos ; 
-   cupt2 -> physpos = cupt -> physpos ; 
-   cupt2 -> alleles[0] = cupt -> alleles[0] ; 
-   cupt2 -> alleles[1] = cupt -> alleles[1] ; 
+    cupt2 = s2[i] ; 
+    k = snpindex(s1, nums1, cupt2 -> ID) ; 
+    if (k<0) { 
+      printf("%20s not found\n", cupt2->ID) ; 
+      cupt2 -> ignore = YES ;
+      continue ;
+    }
+    cupt1 = s1[k] ; 
+    fixaa(cupt1, cupt2) ;
+    if (cupt1 -> alleles[1] == 'X') {
+      cupt1 -> alleles[1] = cxx(cupt1 -> alleles, cupt2 -> alleles) ;
+    }
+    tcupt = *cupt2 ;
+    *cupt2 = *cupt1 ;
+    cupt = &tcupt ;
+    cupt2 -> chrom =   cupt -> chrom ; 
+    cupt2 -> genpos =  cupt -> genpos ; 
+    cupt2 -> physpos = cupt -> physpos ; 
+    cupt2 -> alleles[0] = cupt -> alleles[0] ; 
+    cupt2 -> alleles[1] = cupt -> alleles[1] ; 
   }
   freesnpindex() ;
 }
