@@ -396,8 +396,8 @@ int readsnpdata(SNPDATA **snpraw, char *fname)   {
 int readsnpmapdata(SNPDATA **snpraw, char *fname)   {
   char line[MAXSTR] ;
   char *spt[MAXFF], *sx ;
-  int nsplit, num=0, k, t ;
-  int skipit, len ;
+  int nsplit, num=0, k ;
+  int skipit ;
   SNPDATA *sdpt ;
   int nbad = 0 ;
 
@@ -502,17 +502,10 @@ int numfakes(SNPDATA **snpraw, int *snpindx, int nreal, double spacing)   {
   // it seems better for this internal routine 
   // to use the precomputed values
     
-  int nignore, numsnps;
-  int nfake = 0, i, k, indx ;
-  int num=0; 
-  SNP *cupt ;
+  int nfake = 0, k, indx ;
   SNPDATA *sdpt ;
-  char *sname ;
-  int *sp ;
   int xc = 0, chrom ;
   double fakedis, realdis ;   // gpos for fake marker 
-  double yf, yr ;
-  double physpos ;
 
   if (spacing <= 0.0) fakedis = 1.0e20 ;
 
@@ -575,21 +568,20 @@ int loadsnps(SNP **snpm, SNPDATA **snpraw,
   // do NOT call externally
  
   int nignore, numsnps;
-  int nfake = 0, i, k, indx ;
+  int nfake = 0, k, indx ;
   int num=0, tnum; 
   SNP *cupt= NULL, *lastcupt = NULL, *tcupt ;
   SNPDATA *sdpt ;
   char *sname ;
-  int *sp ;
   int xc = 0, chrom ;
-  double fakedis, realdis, xrealdis ;   // gpos for fake marker 
+  double fakedis, realdis ;   // gpos for fake marker 
   double yf, yr ;
   double physpos ;
-  double xl, xr, xmid, al, ar, fraw ;
+  double xl, xr, al, ar, fraw ;
   double y ;
   int nn[2], n0, n1 ;
   int cnum, t ;
-  int inputrow, chimpfudge, xchimpfudge ;
+  int inputrow ;
   int ischimp = NO ;
   char ss[6] ; 
 
@@ -776,7 +768,7 @@ int getindivs(char *indivfname, Indiv ***indmarkpt)   {
 int readinddata(Indiv **indivmarkers, char *fname)   {
   char line[MAXSTR] ;
   char *spt[MAXFF], *sx ;
-  int nsplit, num=0, k ;
+  int nsplit, num=0 ;
   int skipit ;
   Indiv *indx ;
 
@@ -831,7 +823,6 @@ int readindpeddata(Indiv **indivmarkers, char *fname)   {
   int nsplit, num=0, k, i ;
   int skipit ;
   Indiv *indx ;
-  int nindiv ; 
   int maxnsplit = 0 ;
   char nnbuff[IDSIZE] ;
   int nok = 0 ;
@@ -958,11 +949,9 @@ int readtldata(Indiv **indivmarkers, int numindivs, char *inddataname)    {
   // warning printed if theta/lambda not in file
   char line[MAXSTR] ; 
   char *spt[MAXFF], *sx ; 
-  int nsplit, num=0, k, ind, i ; 
+  int nsplit, num=0, ind, i ; 
   int skipit ; 
   Indiv *indx ; 
-  double y ; 
-  double gg[3] ;  
   int *xcheck ;
  
   FILE *fff ; 
@@ -1016,7 +1005,7 @@ int readtldata(Indiv **indivmarkers, int numindivs, char *inddataname)    {
 int readfreqdata(SNP **snpm, int numsnps, char *inddataname)    {
   char line[MAXSTR] ; 
   char *spt[MAXFF], *sx ; 
-  int nsplit, num=0, k, ind ; 
+  int nsplit, num=0, ind ; 
   int skipit ; 
   SNP *cupt ; 
  
@@ -1091,7 +1080,7 @@ long getgenos(char *genoname, SNP **snpmarkers, Indiv **indivmarkers,
   char *gname, *genotmp = NULL ;
   ENTRY *hashlist, *iteml  ;
   ENTRY item1 ;
-  int k, num, indiv, lgt ;
+  int k, num, indiv ;
   int val ;
   void *basept = 0 ;
   int bigoff ;
@@ -1378,7 +1367,6 @@ int rmindivs(SNP **snpm, int numsnps, Indiv **indivmarkers, int numindivs)   {
   // squeeze out ignore
   // dangerous bend.  Of course indivmarkers indexing will change
   int n = 0, g, i, k ;
-  int x ; 
   Indiv *indx ;
   SNP *cupt ;
 
@@ -1485,7 +1473,6 @@ void freecupt(SNP **cuppt)   {
 /* ---------------------------------------------------------------------------------------------------- */
 void clearind(Indiv **indm, int numind)   {
   Indiv *indx ;  
-  double theta ; 
   int i ;
 
   for (i=0; i<numind; i++)  {
@@ -1533,7 +1520,6 @@ double mknn(int *nn, int  n0, int n1)   {
 /* ---------------------------------------------------------------------------------------------------- */
 void setug(Indiv **indm, int numind, char gender)    {
   Indiv *indx ;  
-  double theta ; 
   int i ;
 
   for (i=0; i<numind; i++)  {
@@ -1549,8 +1535,7 @@ void dobadsnps(SNPDATA **snpraw, int nreal, char *badsnpname)   {
   FILE *fff ;
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
-  char *ss ;
-  int indx, nsplit, n ;
+  int indx, nsplit ;
 
   if (badsnpname == NULL) return ;
   openit (badsnpname, &fff, "r") ;
@@ -1619,13 +1604,12 @@ void mkchrom(char *ss, int chrom, double *ppos, int fudge, int chrmode)
 /* ---------------------------------------------------------------------------------------------------- */
 void printsnps(char *snpoutfilename, SNP **snpm, int num, Indiv **indm, int printfake, int printvalids)   {
 
-  int i, chrom ;
+  int i ;
   double ppos ;
   SNP *cupt ;
   char ss[10] ;
   FILE *xfile ;
   int numvcase, numvcontrol ;
-  char c ;
 
   if ((snpoutfilename != NULL) && (strcmp(snpoutfilename, "NULL") == 0))  return ;
   if (snpoutfilename != NULL)  {
@@ -1789,10 +1773,7 @@ int readindval(Indiv **indivmarkers, int numindivs, char *inddataname)    {
  char line[MAXSTR] ; 
  char *spt[MAXFF], *sx ; 
  int nsplit, num=0, k, ind ; 
- int skipit ; 
  Indiv *indx ; 
- double y ; 
- double gg[3] ;  
  
  FILE *fff ; 
  openit(inddataname, &fff, "r") ; 
@@ -1881,7 +1862,6 @@ int readgdata(Indiv **indivmarkers, int numindivs, char *gname)
 int putweights(char *fname, SNP **snpm, int numsnps)    {
   int num=0, k ;
   SNP *cupt ;
-  double weight ;
 
   FILE *fff ;
   openit(fname, &fff, "w") ;
@@ -1950,7 +1930,6 @@ void outpack(char *genooutfilename, SNP **snpm, Indiv **indiv, int numsnps, int 
   double y ;
   unsigned char *buff  ;
   int fdes, ret ;
-  char *packit ;
 
   n = numind ;
   ZALLOC(arrx, n, char *) ;
@@ -2083,7 +2062,7 @@ int iseigenstrat(char *gname)   {
    FILE *fff ;
    char line[MAXSTR] ;
    char *spt[MAXFF], *sx ;
-   int nsplit, num=0, k ;
+   int nsplit;
 
 
    openit(gname, &fff, "r") ;
@@ -2118,7 +2097,7 @@ int ineigenstrat(char *gname, SNP **snpm, Indiv **indiv, int numsnps, int numind
   int nind, nsnp, len ;
   double y  ;
   unsigned char *buff  ;
-  char *packit, *pbuff ;
+  char *pbuff ;
   int *gtypes, g, g1, g2 ;
   SNP *cupt ; 
   Indiv *indx ;
@@ -2221,7 +2200,7 @@ int ineigenstrat(char *gname, SNP **snpm, Indiv **indiv, int numsnps, int numind
 /* ---------------------------------------------------------------------------------------------------- */
 int calcishash(SNP **snpm, Indiv **indiv, int numsnps, int numind, int *pihash, int *pshash)  {
   char **arrx ;  
-  int ihash, shash, n, num ;  
+  int n, num ;  
   int i ;
   Indiv *indx ; 
   SNP *cupt ;
@@ -2307,17 +2286,16 @@ void failorder()
 /* ---------------------------------------------------------------------------------------------------- */
 void inpack(char *gname, SNP **snpm, Indiv **indiv, int numsnps, int numind)   {
 
-  char **arrx, junk[10] ;  
-  int n, num, ihash, shash, i, g, j, k ;
+  int n, ihash, shash, i, g, j, k ;
   long t ;
   int xihash, xshash, xnsnp, xnind ;
-  int nind , nsnp, irec ;
+  int nind , nsnp ;
   Indiv *indx ; 
   SNP *cupt ;
   double y ;
   unsigned char *buff  ;
-  int fdes, ret ;
-  char *packit, *pbuff ;
+  int fdes ;
+  char *pbuff ;
 
   nind = n = numind ;
   nsnp = calcishash(snpm, indiv, numsnps, numind, &ihash,  &shash) ; 
@@ -2399,11 +2377,10 @@ void inpack(char *gname, SNP **snpm, Indiv **indiv, int numsnps, int numind)   {
 void getsnpsc(char *snpscname, SNP **snpm, int numsnps)  {
 
   FILE *fff ;
-  int  score  ;
   SNP *cupt ;
   char line[MAXSTR] ;
   char *spt[MAXFF], *sx ;
-  int nsplit, num=0, k ;
+  int nsplit, k ;
   double y ;
 
 
@@ -2467,7 +2444,6 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
   int ngenos = 0 ;
 
   SNP *cupt ;
-  Indiv *indx ;
 
   char *line ;
   char **spt, *sx ;
@@ -2481,7 +2457,6 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
   int xvar, xref ;
   int parity, colbase, ncols ; 
   int snpnum ;
-  int markernum = -99 ;
   int n1, n2 ;
 
   /* 
@@ -2892,8 +2867,8 @@ void settersemode(int mode)   {
 /* ---------------------------------------------------------------------------------------------------- */
 void outindped(char *indname, Indiv **indiv, int numind, int ogmode)    {
 
-  FILE *fff, *ifile  ;
-  int  g, i, k ;
+  FILE *ifile  ;
+  int i;
   Indiv *indx ;
   char c ;
   int pgender, astatus ;
@@ -2933,7 +2908,7 @@ void outindped(char *indname, Indiv **indiv, int numind, int ogmode)    {
 void outped(char *snpname, char *indname, char *gname, SNP **snpm, Indiv **indiv, 
   int numsnps, int numind, int ogmode)   {
 
-  FILE *fff, *ifile  ;
+  FILE *fff;
   int  g, i, k ;
   SNP *cupt ; 
   Indiv *indx ;
@@ -3038,13 +3013,8 @@ void gtox(int g, char *cvals, int *p1, int *p2)   {
 void outpackped(char *snpname, char *indname, char *gname, SNP **snpm, Indiv **indiv, 
   int numsnps, int numind, int ogmode)   {
 
-  FILE *fff, *ifile  ;
   int  g, i, k ;
   SNP *cupt ; 
-  Indiv *indx ;
-  char c ;
-  int pgender, astatus ;
-  int g1, g2, dcode=1  ;
   unsigned char ibuff[3]  ;
   unsigned char *buff ;
   int fdes, ret, blen ;
@@ -3117,7 +3087,7 @@ void outpackped(char *snpname, char *indname, char *gname, SNP **snpm, Indiv **i
 
 /* ---------------------------------------------------------------------------------------------------- */
 void setbedbuff(char *buff, int *gtypes, int numind )  {
-  int i, k ;  
+  int k ;  
   double y ;  
   int blen, wnum, wplace, bplace, t, g ;
   unsigned char c ;
@@ -3187,7 +3157,6 @@ void printmap(char *snpname, SNP **snpm, int numsnps, Indiv **indiv)   {
   int i ;  
   FILE *fff ;
   SNP *cupt ;
-  char  c ;
 
   if (snpname == NULL) return  ;
   openit(snpname, &fff, "w") ;
@@ -3395,7 +3364,7 @@ void setomode(enum outputmodetype *outmode, char *omode)   {
 void snpdecimate(SNP **snpm, int nsnp, int decim, int mindis, int maxdis)  {
   int chrom = -1 ; 
   SNP **cbuff, *cupt, *cupt2 ; 
-  int k, k2, n, t  ;
+  int k, k2, n;
   
   printf( "snpdecimate called: decim: %d  mindis: %d  maxdis: %d\n", decim, mindis, maxdis) ; 
   ZALLOC(cbuff, nsnp, SNP *) ;
@@ -3482,7 +3451,7 @@ int killhir2(SNP **snpm, int numsnps, int numind, double physlim, double genlim,
   int badbuffsize = BADBUFFSIZE ;
   int i,j, k, nbad, kmax, kmin, t, j1, j2, lo, hi  ;
   int *gtypes ;
-  double *x1, *x2, mean, dis, *p1 ;
+  double *x1, *x2, dis, *p1 ;
   int nkill = 0, tj ;
   double y1, y2, y, rho, smax ;
   double **xx1, *yy1 ;
@@ -3653,17 +3622,16 @@ static int setskipit(char *sx)   {
 int inpack2(char *gname, SNP **snpm, Indiv **indiv, int numsnps, int numind)   {
   // load up packed genotype file for merge.
     
-  char **arrx, junk[10] ;  
-  int n, num, ihash, shash, i, g, j, k, t, g1, g2 ;
+  char **arrx;
+  int n, num, ihash, shash, i, g, k, t, g1, g2 ;
   int xihash, xshash, xnsnp, xnind ;
-  int nind , nsnp, irec ;
+  int nind , nsnp;
   Indiv *indx ; 
   SNP *cupt, *cupt2 ;
   SNP xsnp ;
   double y ;
   unsigned char *buff, *tbuff  ;
-  int fdes, ret ;
-  char *packit, *pbuff ;
+  int fdes;
   int nbad = 0 ;
   n = numind ;
 
@@ -4055,7 +4023,6 @@ int genoreadit(genofile *gfile, SNP **pcupt)    {
   genofile *gpt ;
   SNP *cupt ;
   int t, rlen, snum ;
-  int k ;
  
   cupt = *pcupt = NULL ;
   gpt = gfile ;
