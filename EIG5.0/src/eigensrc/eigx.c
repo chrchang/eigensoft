@@ -3,11 +3,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #ifdef __APPLE__
 #include <Accelerate/Accelerate.h>
 #else
+
+#ifdef _WIN32
+
+#define HAVE_LAPACK_CONFIG_H
+#define LAPACK_COMPLEX_STRUCTURE
+#include "../lapack/lapacke/include/lapacke.h"
+typedef int __CLPK_integer;
+
+typedef double __CLPK_doublereal;
+#else // begin !_WIN32
 #if __LP64__
-// allow the same code to work for OS X and Linux
 typedef int __CLPK_integer;
 #else
 typedef long int __CLPK_integer;
@@ -36,7 +46,8 @@ int dsygv_(__CLPK_integer* itype, char* jobz, char* uplo, __CLPK_integer* n,
            __CLPK_doublereal* a, __CLPK_integer* lda, __CLPK_doublereal* b,
            __CLPK_integer* ldb, __CLPK_doublereal* w, __CLPK_doublereal* work,
            __CLPK_integer* lwork, __CLPK_integer* info);
-#endif
+#endif // end !_WIN32
+#endif // end !__APPLE__
 
 void mem_error() {
   fprintf(stderr, "CM\n");
@@ -72,7 +83,7 @@ void eigx_(double* pmat, double* ev, __CLPK_integer* n) {
   free(z);
   free(work);
   if (info) {
-#if __LP64__
+#if __LP64__ || _WIN32
     fprintf(stderr, "INFO: %d\n", info);
 #else
     fprintf(stderr, "INFO: %ld\n", info);
@@ -93,7 +104,7 @@ void eigxv_(double* pmat, double* eval, double* evec, __CLPK_integer* n) {
   dspev_(&jobz, &uplo, n, pmat, eval, evec, &ldz, work, &info);
   free(work);
   if (info) {
-#if __LP64__
+#if __LP64__ || _WIN32
     fprintf(stderr, "INFO: %d\n", info);
 #else
     fprintf(stderr, "INFO: %ld\n", info);
@@ -109,13 +120,13 @@ void cdc_(double* pmat, __CLPK_integer* n) {
   dpotrf_(&uplo, n, pmat, &lda, &info);
   if (info) {
     if (info < 0) {
-#if __LP64__
+#if __LP64__ || _WIN32
       fprintf(stderr, "error (CDC): illegal argument %d\n", -info);
 #else
       fprintf(stderr, "error (CDC): illegal argument %ld\n", -info);
 #endif
     } else {
-#if __LP64__
+#if __LP64__ || _WIN32
       fprintf(stderr, "error (CDC): minor not positive definite %d\n", info);
 #else
       fprintf(stderr, "error (CDC): minor not positive definite %ld\n", info);
@@ -196,19 +207,19 @@ void geneigsolve_(double* pmat, double* qmat, double* eval, __CLPK_integer* n) {
   free(work);
   if (info && (info <= 2 * (*n))) {
     if (info < 0) {
-#if __LP64__
+#if __LP64__ || _WIN32
       fprintf(stderr, "error (GENEIGSOLVE): illegal argument %d\n", -info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): illegal argument %ld\n", -info);
 #endif
     } else if (info <= (*n)) {
-#if __LP64__
+#if __LP64__ || _WIN32
       fprintf(stderr, "error (GENEIGSOLVE): failure to converge %d\n", info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): failure to converge %ld\n", info);
 #endif
     } else {
-#if __LP64__
+#if __LP64__ || _WIN32
       fprintf(stderr, "error (GENEIGSOLVE): not positive definite %d\n", info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): not positive definite %ld\n", info);
