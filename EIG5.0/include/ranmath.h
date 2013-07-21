@@ -9,12 +9,13 @@
 #ifdef _WIN32
 #define SRAND  srand
 #define LRAND  rand
+#define DRAND() ( (double) (rand() % BIGINT) / (double) (BIGINT)) 
 #else
 #define SRAND  srandom
 #define LRAND  random
+#define DRAND() ( (double) (random() % BIGINT) / (double) (BIGINT)) 
 #endif
 
-#define DRAND() ( (double) (random() % BIGINT) / (double) (BIGINT)) 
 #define DRAND2() ( drand2() ) 
 /* random must return random integer in range 0 to BIGINT-1  */
 
