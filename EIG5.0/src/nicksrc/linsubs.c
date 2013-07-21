@@ -9,7 +9,7 @@
 static int linsolvx(int nDim, double* pfMatr, double* pfVect, double* pfSolution) ;
 static int calcdet = NO ; 
 
-int setcalcdet (int val) 
+void setcalcdet (int val) 
 {
   calcdet = val ;
 }
@@ -69,7 +69,7 @@ double pdinv(double *cinv, double *coeff, int n)
 {
    double *tt;
    double *p ;
-   double t, sum, y ;
+   double sum, y ;
    int i,j, k ;
 
 /**
@@ -126,7 +126,6 @@ solvit (double *prod, double *rhs, int n, double *ans)
   double *ttt;                   
   double *b; 
   double *p; 
-  int i ; 
   int ret ;
  
  
