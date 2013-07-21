@@ -6,8 +6,7 @@ void squishx(double *xmat, double *mat, int nrow, int oldc, int *cols, int newc)
 double regressit(double *ans, double *eq, double *rhs, int m, int n) 
 {
  double *co, *rr, *ww, *w2 ;
- double vres, vbase, ynum, y, trace  ;
- double *traneq ;
+ double vres, vbase, ynum ;
  int i, j,  k, ret ;
 
  ZALLOC(co, n*n, double) ;
@@ -147,7 +146,7 @@ logregressit(double *ans, double *eq, double **rhs, int neq, int nv)
  double *p, *z, *q  ;
  double *n0, *n1, *tans ;
  double *grad, *hess, rr[2] ;
- double y0, y1, y, ylike, ybase, yold ;
+ double y0, y1, y, ylike, ybase, yold = 0 ;
  int i, j ;
  int iter, numiter = 10 ;
  int ret ;
@@ -366,7 +365,6 @@ double logrscore(double *eq, double **rhs, int neq, int nv)
 {
  double *teq, *ans ;
  double y1, y2, ychi ;
- int i ;
 
  ZALLOC(teq, neq*nv, double) ;
  ZALLOC(ans, nv, double) ;
