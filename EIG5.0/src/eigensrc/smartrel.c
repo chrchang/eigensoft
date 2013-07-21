@@ -224,52 +224,34 @@ void fixwt(SNP **snpm, int nsnp, double val) ;
 int main(int argc, char **argv)
 {
 
-  char sss[MAXSTR] ;
-  int **snppos ;
-  int *snpindx ;
-  char **snpnamelist, **indnamelist ;
   char **eglist ;
-  int  lsnplist, lindlist, numeg ;
-  int i, j, k, k1, k2, pos; 
+  int numeg ;
+  int i, j, k, pos; 
   int *vv ;
-  SNP *cupt, *cupt1, *cupt2, *cupt3 ;
+  SNP *cupt, *cupt2 ;
   Indiv *indx ;
   double y1, y2, y ;
-  FILE *twxtestfp;
 
-  int ch1, ch2 ;
-  int fmnum , lmnum ;
-  int num, n0, n1, nkill ;
+  int n0, n1, nkill ;
 
-  int nindiv = 0, e, f, lag=1  ;
-  double xc[9], xd[4], xc2[9] ;
-  double ychi,  tail, tw ;
+  int nindiv = 0 ;
   int nignore, numrisks = 1 ;
-  double  *xrow, *xpt ; 
   SNP **xsnplist  ;
   Indiv **xindlist ;
-  int *xindex, *xtypes ;
+  int *xindex ;
   int nrows, ncols, m ;
-  double *XTX, *cc, *evecs, *ww, weight, *qvec, *qcoord ; 
+  double *XTX, *cc, *evecs, *ww, weight ;
   double *lambda ;
   double *tvecs ;
-  double zn, zvar ;
-  double *fvecs, *fxvecs, *fxscal ;
-  double *ffvecs ;
   int weightmode = NO ;
-  double chisq, ynrows ;
-  int *numhits, t, g ;  
+  int t ;
   double *xmean, *xfancy ;
   double *ldmat, *ldmat2, *ldvv, *ldvv2, *vv2  ;
-  double *fstans, *fstsd ; 
   int chrom,  numclear ;
   double gdis ;
   int outliter, numoutiter, *badlist, nbad ;
-  int a, b, kmax, kmin, n ;
-  FILE *outlfile, *phylipfile  ;
-  double **eigmoment, **eigindmoment ;
-  double *eigkurt, *eigindkurt ;
-  double *snpsc ; 
+  int a, b, n ;
+  FILE *outlfile ;
   
 
   int xblock, blocksize=10000 ;   
@@ -629,11 +611,9 @@ int main(int argc, char **argv)
 void readcommands(int argc, char **argv) 
 
 {
-  int i,haploid=0;
+  int i ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n, t ;
+  int t ;
 
   while ((i = getopt (argc, argv, "p:vV")) != -1) {
 
@@ -800,8 +780,8 @@ dottest(char *sss, double *vec, char **eglist, int numeg, int *xtypes, int len)
 {
    double *w1 ; 
    int *xt ;
-   int i, k1, k2, k, j, n, x1, x2 ;
-   double y1, y2, ylike, yl0, yl1, yl2 ;
+   int i, k1, k2, k, n, x1, x2 ;
+   double ylike ;
    double ychi ;
    double *wmean ;
    int imax, imin, *isort ;
@@ -809,8 +789,7 @@ dottest(char *sss, double *vec, char **eglist, int numeg, int *xtypes, int len)
 
    char ss1[MAXSTR] ;
    char ss2[MAXSTR] ;
-   char sshit[4] ;
-   double tail, ans, ftail, ftailx, ansx ; 
+   double ans, ftail, ftailx, ansx ; 
 
    ZALLOC(wmean, numeg, double) ;
    ZALLOC(w1, len + numeg, double) ;
@@ -897,7 +876,7 @@ double anova(double *vec, int len, int *xtypes, int numeg)
 // anova 1 but f statistic
 {
    int i, k ; 
-   double y1, y2, ylike, top, bot, ftail ;  
+   double y1, top, bot, ftail ;  
    double *w0, *w1, *popsize, *wmean ;
 
    static int ncall2  = 0 ;
@@ -1011,7 +990,7 @@ void publishit(char *sss, int df, double chi)
       if (chisqmode) {
        if (ncall==1) printf("## Anova statistics for population differences along each eigenvector:\n");
        if (ncall==1) printf("%40s %6s %9s %12s\n", "", "dof", "chisq", "p-value") ;
-       printf("%40s %6d %9.3f",ss2, ss2, df, chi) ;
+       printf("%40s %6d %9.3f", ss2, df, chi) ;
        tail = rtlchsq(df, chi) ;  
        printf(" %12.6g", tail) ;
       }
@@ -1200,9 +1179,7 @@ double dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *
 
 {
 
-   int t1, t2 ;
    int nblocks, xnblocks ;  
-   double y, sd ; 
    int *blstart, *blsize ;
    double *xfst ;
 
@@ -1457,11 +1434,9 @@ getcolxz(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
  double *xmean, double *xfancy, int *n0, int *n1)             
 // side effect set xmean xfancy and count variant and reference alleles
 {
- Indiv *indx  ;
- int  j,  n, g, t ;
- double y, pmean, p, yfancy ;
+ int  j,  n, g ;
+ double pmean, yfancy ;
  int *rawcol ;
- int **ccc ;
  int c0, c1 ;
 
   c0 = c1 = 0 ;
@@ -1506,9 +1481,8 @@ getcolxf(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
  double *xmean, double *xfancy)
 // side effect set xmean xfancy
 {
- Indiv *indx  ;
- int  j,  n, g, t ;
- double y, pmean, p, yfancy ;
+ int n ;
+ double pmean, yfancy ;
  int *rawcol ;
 
   if (xmean != NULL) {
