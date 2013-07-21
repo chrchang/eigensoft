@@ -46,7 +46,7 @@ int  loadlist(char **list, char *listname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, n=0 ;
+  int nsplit, n=0 ;
 
   if (listname == NULL) return 0 ;
   openit(listname, &lfile, "r") ;
@@ -72,8 +72,7 @@ int  loadlist_type(char **list, char *listname, int *ztypes, int off)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  Indiv *indx ;
-  int nsplit, i, n=0, tt ;
+  int nsplit, n=0, tt ;
 
   if (listname == NULL) return 0 ;
   openit(listname, &lfile, "r") ;
@@ -102,8 +101,7 @@ void seteglist(Indiv **indm, int nindiv, char *eglistname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  Indiv *indx ;
-  int nsplit, i, n, x, t ;
+  int nsplit, n, x, t ;
   char **eglist ; 
 
   if (eglistname == NULL) return ;
@@ -136,8 +134,7 @@ void seteglistv(Indiv **indm, int nindiv, char *eglistname, int val)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx = NULL ;
-  Indiv *indx ;
-  int nsplit, i ;
+  int nsplit ;
 
   if (eglistname == NULL) {    
    setstatusv(indm, nindiv, NULL, val) ;
