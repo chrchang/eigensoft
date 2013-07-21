@@ -17,7 +17,7 @@ extern int numchrom;
 int  usecm = NO ;                //!< genetic distances are in cMorgans
 int plinkinputmode = NO ;
 static int snprawtab = NO ;
-static int debug = NO ;
+// static int debug = NO ;
 extern  char *trashdir ;
 extern int qtmode ;              //!< user parameter (phenotype is quantitative)
 extern int verbose ;             //!< user parameter (print additional output to stdout)
@@ -505,7 +505,7 @@ int numfakes(SNPDATA **snpraw, int *snpindx, int nreal, double spacing)   {
   int nfake = 0, k, indx ;
   SNPDATA *sdpt ;
   int xc = 0, chrom ;
-  double fakedis, realdis ;   // gpos for fake marker 
+  double fakedis = 0, realdis ;   // gpos for fake marker 
 
   if (spacing <= 0.0) fakedis = 1.0e20 ;
 
@@ -4195,7 +4195,7 @@ void sortsnps(SNP **snpa, SNP **snpb, int n)
     \brief Determine whether an input line from the SNP file should be skipped
     \param sx is the first token on the input line
     Skip if this is a comment or a line of column headers.
-  /
+ */
 
 /*! \fn int numfakes(SNPDATA **snpraw, int *snpindx, int nreal, double spacing)    
     \brief Return (approximate) number of fake SNPs that will be inserted
