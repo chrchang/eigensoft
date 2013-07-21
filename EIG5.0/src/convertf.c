@@ -177,32 +177,18 @@ void downsamp(SNP *cupt) ;
 int main(int argc, char **argv)
 {
 
-  int **snppos ;
-  int *snpindx ;
-  char **snpnamelist, **indnamelist ;
-  char **eglist ;
-  int  lsnplist, lindlist, numeg ;
-  int i,j; 
-  SNP *cupt, *cupt1, *cupt2, *cupt3 ;
-  Indiv *indx ;
-  double gpos1,gpos2,cpos1,cpos2,gd, cd, gd100 ;
-  double rthresh, zt ;
-  int mpflag, ret, numvalidind, nvalid, numvalidsnps ;
+  char **eglist;
+  int numeg;
+  int i;
+  SNP *cupt;
+  Indiv *indx;
+  int numvalidind;
 
-  int ch1, ch2 ;
-  int fmnum , lmnum ;
-  int num, n1, n2 ;
   int nkill = 0 ;
   int t, k, g ;
 
-  int nindiv = 0, e, f, lag=1  ;
-  double xc[9], xd[4], xc2[9] ;
-  double ychi, zscore, zthresh = 20.0 ;
-  double y1, y2 ; 
   int nignore, numrisks = 1 ;
 
-  char **genolist ;
-  int numgenolist ;
   char c1, c2 ;
   int t1, t2 ;
 
