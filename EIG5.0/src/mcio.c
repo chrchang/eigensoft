@@ -2443,7 +2443,7 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
   int val ;
   int ngenos = 0 ;
 
-  SNP *cupt ;
+  SNP *cupt = NULL;
 
   char *line ;
   char **spt, *sx ;
@@ -2455,7 +2455,7 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
   FILE *fff ;
   int **gcounts, *gvar, *gref ;
   int xvar, xref ;
-  int parity, colbase, ncols ; 
+  int parity, colbase = 6, ncols = 0; 
   int snpnum ;
   int n1, n2 ;
 
