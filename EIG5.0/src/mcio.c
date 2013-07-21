@@ -574,13 +574,13 @@ int loadsnps(SNP **snpm, SNPDATA **snpraw,
   SNPDATA *sdpt ;
   char *sname ;
   int xc = 0, chrom ;
-  double fakedis, realdis ;   // gpos for fake marker 
+  double fakedis = 0, realdis ;   // gpos for fake marker 
   double yf, yr ;
   double physpos ;
   double xl, xr, al, ar, fraw ;
   double y ;
   int nn[2], n0, n1 ;
-  int cnum, t ;
+  int cnum = 0, t ;
   int inputrow ;
   int ischimp = NO ;
   char ss[6] ; 
@@ -2081,7 +2081,7 @@ int iseigenstrat(char *gname)   {
     return YES ;
    }
    fatalx("(iseigenstrat) no genotyped data found\n") ;
-
+   return 0; // shut up the compiler
 }
 
 
