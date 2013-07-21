@@ -34,7 +34,10 @@ void genmultgauss(double *rvec, int num, int n, double *covar) ;  // multivariat
 double drand2() ;  
 void ranmultinom(int *samp, int n, double *p, int len)  ;  // multinomial
 double ranchi (int d)  ;   // chisq d dof.
-double raninvwis(double *wis, int t, int d, double *s)  ;  // inverse wishart
+
+// modify nicksrc/gds.c if you want this to have a return value --CC
+void raninvwis(double *wis, int t, int d, double *s)  ;  // inverse wishart
+
 double uniform(double lo, double hi) ;   // uniform (lo..hi)
 void randirichlet(double *x, double *pp, int n)  ;  // dirichlet parameter vector pp
 void randirmult(double *pp, int *aa, int len, int m) ;  // dirichlet multinomial.  Output aa

@@ -125,8 +125,7 @@ double ranpoiss(double xm)
 double ranpoissx(double xm) 
 /* poisson variable conditional on >0 */
 {
-   double x, t, tc, s, y ;
-   int k ;
+   double x ;
    if (xm>1.0)  {  
     for (;;) {  
      x = ranpoiss(xm) ;
@@ -179,7 +178,7 @@ int randis(double *a, int n)
 {
 /* a should be prob dis summing to 1 */ 
   int i ;  
-  double t, y ;
+  double t ;
   static int nfirst=0 ;
 
   ++nfirst ;
@@ -344,7 +343,7 @@ int ewens(int *a, int n, double theta)
      int i, k, maxcat=0 ;
      double t, x ;
 
-    if (n==0) return ;
+    if (n==0) return 0;
     a[0] = maxcat = 1 ;
     for (i=1 ; i< n ; i++)  {
      t = theta/ ((double) i + theta) ;
@@ -368,7 +367,7 @@ double ranpoiss1(double xm)
  Don't call this directly
 */
 {
-   double x, t, tc, s, y ;
+   double t, tc, s, y ;
    int k ;
     t = exp(-xm) ;
     tc = 1.0-t ;
@@ -458,7 +457,7 @@ double ranchi (int d)
 
 }
 
-double raninvwis(double *wis, int t, int d, double *s) 
+void raninvwis(double *wis, int t, int d, double *s) 
 // inverse Wishart:  t d.o.f. d dimension S data matrix  
 // Ref Liu: Monte Carlo Strategies pp 40-41
 
@@ -547,8 +546,6 @@ void randirmult(double *pp, int *aa, int len, int m)
 /**
  compound dirichlet - Multinomial
 */
-     int k ;
-     double a, b, p ;
      double *x ;
 
     if (len==0) return ;
@@ -576,7 +573,7 @@ int prob1(double p)
 double rant(double df)
 // t distribution df > 0
 {
-  static double p = -1, olddf = -1.0  ;
+  static double p = -1 ;
   static double zkon ;
   double y  ;
   
@@ -595,7 +592,7 @@ double samppow(double e, double a, double b)
 // care taken to prevent underflow  
 {
 
-  double ztot, rhs, zlog, ee, x ;
+  double zlog, ee, x ;
   double y1, y2, u ; 
 
   ee = e+1.0 ;
@@ -649,7 +646,7 @@ int ranhprob(int n, int a, int m)
 {
  double  y ;
  double pm, logpm, w, ru, rw, rat ;
- int mode, k, x, zans ;
+ int mode, x, zans ;
 
  mode = modehprob(n, a, m) ;
  logpm = loghprob(n, a, m, mode) ;
