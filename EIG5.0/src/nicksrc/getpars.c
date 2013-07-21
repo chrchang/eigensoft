@@ -30,7 +30,6 @@ phandle *openpars(char *fname)
   FILE *ff ;
 
  char line[MAXSTR+1] ;
- char str[MAXSTR] ;
  char ww[MAXSTR] ;
  char rest[MAXSTR] ;
 

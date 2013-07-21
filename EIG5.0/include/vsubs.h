@@ -107,8 +107,8 @@ double logmultinom(int *cc, int n) ;
 double addlog(double a, double b) ;
 double vldot(double *x, double *y, int n) ;
 double pow10 (double x) ;
-double vpow10 (double *a, double *b, int n) ;
-double vlog10 (double *a, double *b, int n) ;
+void vpow10 (double *a, double *b, int n) ;
+void vlog10 (double *a, double *b, int n) ;
 /* matrix transpose */
 void transpose(double *aout, double *ain, int m, int n)  ;
 void addoutmul(double *out, double *a, double mul, int n) ;

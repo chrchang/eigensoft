@@ -857,7 +857,7 @@ void printstringf(char *ss, int w, FILE *fff)
    char *sx ;
 
    ZALLOC(sss, w+1, char) ;   
-   cclear(sss, CNULL, w+1) ;
+   cclear((unsigned char*)sss, CNULL, w+1) ;
 
    sx = ss ; 
    for (;;) { 
@@ -1079,14 +1079,14 @@ double pow10 (double x)
 }
 
 
-double vpow10 (double *a, double *b, int n) 
+void vpow10 (double *a, double *b, int n) 
 {
      int i ;
      for (i=0; i< n; i++)  
       a[i] = exp(b[i] * log(10.0)) ;
 }
 
-double vlog10 (double *a, double *b, int n) 
+void vlog10 (double *a, double *b, int n) 
 {
      int i ;
      for (i=0; i< n; i++)  
@@ -1122,7 +1122,7 @@ void transpose(double *aout, double *ain, int m, int n)
 }
 int **initarray_2Dint(int numrows, int numcolumns, int initval)
 {
-  int i,j;
+  int i;
   int **array;
 
    		
@@ -1136,7 +1136,7 @@ int **initarray_2Dint(int numrows, int numcolumns, int initval)
 }
 long **initarray_2Dlong(int numrows, int numcolumns, int initval)
 {
-  int i,j;
+  int i;
   long  **array;
 
    		
@@ -1178,7 +1178,7 @@ void free_iarray (int  **xx)
 
 double **initarray_2Ddouble(int numrows, int numcolumns, double initval)
 {
-  int i,j;
+  int i;
   double **array;
 
    		
