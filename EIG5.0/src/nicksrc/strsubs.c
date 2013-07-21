@@ -3,9 +3,13 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <stdarg.h>
-#ifndef _WIN32
+
+#ifdef _WIN32
+#include <time.h>
+#else
 #include <sys/times.h>
 #endif
+
 #include <time.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -203,18 +207,19 @@ int isnumword (char *str)
 
 long seednum() 
 {
+#ifdef _WIN32
+  // well, this is better than nothing
+  long a = (int)time(NULL);
+  return a;
+#else
    long a, b, c, d ;
    struct tms tbuff ;
-
    a = (long) getpid() ;
    b = (long) getuid() ;
    d = times(&tbuff) ;
-
    c = d ^ ((a + b) << 15) ;
-
-
    return c ;
-
+#endif
 }
 int splitupwxbuff(char *strin, char **spt, int maxpt, char *bigbuff, int bigbufflen)  
 // splits by white space; No zero length strings
