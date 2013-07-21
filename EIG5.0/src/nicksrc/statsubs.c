@@ -881,7 +881,7 @@ double rtlchsq(int df, double z)
 double
 pochisq (double x, int df)
 {
-	double	a, y, s;
+	double	a, y = 0, s;
 	double	e, c, z;
 	double	poz ();   /* computes probability of normal z score */
 	int 	even;     /* true if df is an even number */
@@ -1136,7 +1136,7 @@ double rtlg2(double a, double x)
 void cinterp(double val, double x0, double x1, 
   double f0, double f0p, double f1, double f1p, double *fv, double *fvp)  ;
 int firstgtx(double val, double *tab, int n) ;
-static int gtx(double *tab, int lo, int hi, double val)  ;
+// static int gtx(double *tab, int lo, int hi, double val)  ;
 void gettw(double x,  double *tailp, double *densp)   ;
 
 
@@ -1441,6 +1441,7 @@ void cinterp(double val, double x0, double x1,
 
 }
 
+/*
 double dirmult(double *pp, int *aa, int len)
 {
   int t, i, m  ;
@@ -1464,8 +1465,9 @@ double dirmult(double *pp, int *aa, int len)
 
   y1 = top-bot ;
 
-  return y1 -y2 ;
+  return y1 -y2 ; // what is y2 supposed to be??
 }
+*/
 
 
 double betaix(double a, double b, double lo, double hi) 

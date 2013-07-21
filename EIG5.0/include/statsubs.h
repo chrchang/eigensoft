@@ -44,7 +44,11 @@ double hwstat(double *x) ;
 double gammprob(double x, double p, double lam)  ;
 double bprob(double p, double a, double b)  ;
 double lbeta(double a, double b)  ;
-double dirmult(double *pp, int *aa, int len) ;
+
+// removed for now since return value doesn't make sense; see
+// nicksrc/statsubs.c --CC
+// double dirmult(double *pp, int *aa, int len) ;
+
 double dawson(double t) ;
 
 double binomtail(int n, int t, double p, char c) ;
