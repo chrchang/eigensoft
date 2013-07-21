@@ -93,24 +93,12 @@ int main(int argc, char **argv)
   int numsnps, numindivs ;
   unsigned char *packg1, *packg2 ;
 
-  int **snppos ;
-  int *snpindx ;
-  int  lsnplist, lindlist, numeg ;
-  int i,j; 
-  SNP *cupt, *cupt1, *cupt2, *cupt3 ;
-  Indiv *indx ;
+  SNP *cupt1, *cupt2 ;
 
-  int ch1, ch2 ;
-  int fmnum , lmnum ;
-  int num, n1, n2 ;
-  int nkill = 0 ;
   int t, k, x ;
 
   int nignore, numrisks = 1 ;
 
-  char **genolist ;
-  int numgenolist ;
-  int maxmiss ; 
 
   tersem = YES ;     // no snp counts
 
@@ -293,12 +281,9 @@ int checkmatch(SNP *cupt1, SNP *cupt2)
 void readcommands(int argc, char **argv) 
 
 {
-  int i,haploid=0;
+  int i ;
   char *parname = NULL ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n ;
 
   while ((i = getopt (argc, argv, "p:vVf")) != -1) {
 
@@ -396,7 +381,7 @@ mergeit(SNP **snpm1, SNP **snpm2, Indiv ***pindm1, Indiv **indm2,
    rlen = MAX(rlen, 48)  ;
    packlen = numsnps*rlen ;
    ZALLOC(packg, packlen, unsigned char) ;
-   clearepath(packg) ;
+   clearepath((char*)packg) ;
 // wipe to invalid
 
    buff = packg ;
