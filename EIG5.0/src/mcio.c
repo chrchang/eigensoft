@@ -1102,7 +1102,7 @@ long getgenos(char *genoname, SNP **snpmarkers, Indiv **indivmarkers,
   int gnlen, ngenos=0 ;
 
   double y ;
-  char *pbuff ;
+  char *pbuff = NULL ;
 
   item1.key  = NULL ;           
   item1.data = NULL ;           
@@ -2914,7 +2914,7 @@ void outped(char *snpname, char *indname, char *gname, SNP **snpm, Indiv **indiv
   Indiv *indx ;
   char c ;
   int pgender, astatus ;
-  int g1, g2, dcode=1  ;
+  int g1=0, g2=0, dcode=1  ;
 
   settersemode(YES) ;
   if (snpname != NULL) 
@@ -2994,6 +2994,7 @@ void gtox(int g, char *cvals, int *p1, int *p2)   {
       break ;
     default:
       fatalx("(outped) bug %d\n", g) ;
+      return;
   }
 
   if (cvals != NULL)  {  
@@ -3117,6 +3118,7 @@ int bedval(int g)   {
  if (g==0) return 0 ;
 
  fatalx("(bedval) bad g value %d\n", g) ;
+ return 0; // shut up the compiler
 }
 
 
@@ -3328,6 +3330,7 @@ int ancval(int x)   {
   if (x==2) return 1 ;
   if (x==0) return 2 ;
   fatalx("(ancval) bad value %d\n", x) ;
+  return 0; // shut up the compiler
 }
 
 
@@ -3732,7 +3735,7 @@ void getgenos_list(char *genotypelist, SNP **snpmarkers, Indiv **indivmarkers,
 
   char **fnames, *fn ;
   int n ; 
-  int k, nbad, isok ; 
+  int k, nbad = 0, isok ; 
 
   dofreeped = NO ;
   n = numlines(genotypelist) ;
