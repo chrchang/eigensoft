@@ -217,7 +217,7 @@ double oldfstcol(double *estn, double *estd, SNP *cupt,
 void jackrat(double *xmean, double *xsd, double *top, double *bot,  int len)  ;
 void domult(double  *tvecs, double  *tblock, int numrow, int len)  ;
 void writesnpeigs(char *snpeigname, SNP **xsnplist, double *ffvecs, int numeigs, int ncols)  ;
-double dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
+void dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ; 
 void fixwt(SNP **snpm, int nsnp, double val) ;
 
@@ -246,7 +246,8 @@ int main(int argc, char **argv)
   int weightmode = NO ;
   int t ;
   double *xmean, *xfancy ;
-  double *ldmat, *ldmat2, *ldvv, *ldvv2, *vv2  ;
+  double *ldmat = NULL, *ldmat2 = NULL;
+  double *ldvv = NULL, *ldvv2 = NULL, *vv2 = NULL ;
   int chrom,  numclear ;
   double gdis ;
   int outliter, numoutiter, *badlist, nbad ;
@@ -1174,34 +1175,6 @@ ldreg(double *ldmat, double *ldmat2, double *vv, double *vv2, double *ldvv,
   free(tt) ;
 }
 
-double dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
-   int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) 
-
-{
-
-   int nblocks, xnblocks ;  
-   int *blstart, *blsize ;
-   double *xfst ;
-
-  nblocks = numblocks(snpmarkers, numsnps, blgsize) ;
-
-  ZALLOC(blstart, nblocks, int) ;
-  ZALLOC(blsize, nblocks, int) ;
-  ZALLOC(xfst, numeg*numeg, double) ;
-
-  printf("number of blocks for moving block jackknife: %d\n", nblocks) ;
-
-  setblocks(blstart, blsize, &xnblocks, xsnplist, ncols, blgsize)  ;
-  fixwt(xsnplist, ncols, 1.0) ;
-
-  dofstnumx(xfst, fstans, fstsd, xsnplist, xindex, xtypes,  
-   nrows, ncols, numeg, nblocks, indm, YES) ;
-
-  free(blstart) ; 
-  free(blsize)  ; 
-  free(xfst)  ;
-
-}
 void fixwt(SNP **snpm, int nsnp, double val) 
 {
   int k ; 
