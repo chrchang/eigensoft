@@ -78,7 +78,7 @@ rest begin with non-white space, unless rest is null.
  
 */
 {
-   char *spt, x ;
+   char *spt ;
    char *ss = NULL, *sx ;
    int l1,l2 ;
 
@@ -135,7 +135,6 @@ char *ftab (char *ss)
 /* return first tab  */
 {
   char *x ;
-  int n ;
   for (x= ss; *x != '\0'; ++x)  {
    if (*x == CTAB) return x ;
   }
@@ -146,7 +145,6 @@ char *fwhite (char * ss)
 /* return first white space */
 {
   char *x ;
-  int n ;
   for (x= ss; *x != '\0'; ++x)  {
    if (isspace(*x)) return x ;
   }
@@ -220,7 +218,7 @@ long seednum()
 int splitupwxbuff(char *strin, char **spt, int maxpt, char *bigbuff, int bigbufflen)  
 // splits by white space; No zero length strings
 {
-  char *sx, *sy ;   
+  char *sx ;
   int num, len, k, klo ;
   int empty = YES ;
 
@@ -253,7 +251,7 @@ int splitupwxbuff(char *strin, char **spt, int maxpt, char *bigbuff, int bigbuff
 }
 int splitupxbuff(char *strin, char **spt, int maxpt, char splitc, char *bigbuff, int bigbufflen)  
 {
-  char *sx, *sy ;   
+  char *sx ;
   int num, len, k, klo ;
   int empty = YES ;
 
@@ -504,7 +502,7 @@ int numcols(char *name)
   char line[MAXSTR] ;
   char *spt[MAXSTR] ;
   char *sx ;
-  int nsplit, num=0 ;
+  int nsplit ;
 
   if (name == NULL) fatalx("(numlines)  no name")  ;
   openit(name, &fff, "r") ;
@@ -520,6 +518,7 @@ int numcols(char *name)
    fclose(fff) ;
    return nsplit ;
   }
+  return 0; // empty file; should this be a fatal error?
 }
 
 int numlines(char *name)
@@ -569,7 +568,7 @@ getxx(double **xx, int maxrow, int numcol, char *fname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff ;
+  int nsplit, i, num=0, maxff ;
   FILE *fff ;
   int nbad = 0 ; 
 
@@ -634,7 +633,7 @@ getnames(char ****pnames, int maxrow, int numcol, char *fname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff, numcolp ;
+  int nsplit, i, num=0, maxff, numcolp ;
   FILE *fff ;
   int nbad = 0 ; 
   char ***names ;
@@ -681,7 +680,7 @@ getxxnames(char ***pnames, double **xx, int maxrow, int numcol, char *fname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff, numcolp ;
+  int nsplit, i, num=0, maxff, numcolp ;
   FILE *fff ;
   int nbad = 0 ; 
   char **names = NULL ;
@@ -734,9 +733,9 @@ like getxxnames but file already open
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff, numcolp ;
+  int nsplit, i, num=0, maxff, numcolp ;
   int nbad = 0 ; 
-  char **names ;
+  char **names = NULL ;
 
   if (pnames != NULL) names = *pnames ;
 
@@ -779,10 +778,9 @@ getss(char **ss, char *fname)
 {
 
   char line[MAXSTR] ;
-  char qqq[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff ;
+  int nsplit, num=0, maxff ;
   FILE *fff ;
 
 
@@ -843,7 +841,6 @@ char *int_string(int a, int len, int base)
 {
   static char ss[100] ;
   int t = a, k, i ;
-  char *binary = "01" ;
 
   ss[len] = CNULL ;
   for (i=0; i<len; i++) {
@@ -1019,7 +1016,7 @@ getjjnames(char ***pnames, int **jj, int maxrow, int numcol, char *fname)
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
   char *sx ;
-  int nsplit, i, j, num=0, maxff, numcolp ;
+  int nsplit, i, num=0, maxff, numcolp ;
   FILE *fff ;
   int nbad = 0 ; 
   char **names ;
@@ -1155,8 +1152,7 @@ int char2int(char cc)
 char int2char(int x) 
 {
 
-  char c ; 
-  c = (char) ('0' + x) ;
+  return (char) ('0' + x) ;
 }
 
 void chomp(char *cc)
