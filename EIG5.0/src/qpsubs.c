@@ -219,13 +219,13 @@ getrawcol(int *rawcol, SNP *cupt, int *xindex, int nrows)
 void
 getrawcolx(int **cc, SNP *cupt, int *xindex, int nrows, Indiv **indm) 
 {
-  int t, j, g, tt ;
+  int t, j, g ;
   int *gg ;
   static int ncall = 0 ;
   
   ++ncall ;
 //  tt = strcmp(cupt -> ID, "rs10914979") ;
-  tt = -1 ;
+  // tt = -1 ;
   for (j=0; j< nrows; j++) {  
    t = xindex[j] ;
    gg = cc[j] ;
@@ -658,8 +658,8 @@ void f2sc(double *estn,  double *estd, SNP *cupt, Indiv **indm,
 {
    int c1[2], c2[2], c3[2], *cc ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, en ;
-   double z, h1, h2, h3, yt ;
+   double ya, yb, yaa, ybb, p2, p3, en ;
+   double h1, h2, h3, yt ;
    double z2, z3 ;
    int **ccc, *ccpt[3] ;
 
@@ -716,11 +716,9 @@ void f2sc(double *estn,  double *estd, SNP *cupt, Indiv **indm,
 
    ya = a = c1[0] ;
    yb = b = c1[1] ;
-   z = ya + yb ;
 
 
    yt = ya+yb ;
-   p1 = ya/yt ;       
 
    h1 = ya*yb/(yt*(yt-1.0)) ;
 
@@ -854,7 +852,7 @@ void f4yx(double *estn,  SNP *cupt, Indiv **indm,
    int c1[2], c2[2], c3[2], c4[2], *cc ;
    int k, g, i, a, b  ; 
    double ya, yb, yaa, ybb, p1, p2, p3, p4, en ;
-   double z, h1, yt ;
+   double yt ;
    int **ccc ;
 
 
@@ -888,12 +886,10 @@ void f4yx(double *estn,  SNP *cupt, Indiv **indm,
 
    ya = a = c1[0] ;
    yb = b = c1[1] ;
-   z = ya + yb ;
 
 
    yt = ya+yb ;
    p1 = ya/yt ;       
-   h1 = ya*yb/(yt*(yt-1.0)) ;
 
    yaa = c2[0] ;
    ybb = c2[1] ;
@@ -925,7 +921,7 @@ void f4y(double *estn,  SNP *cupt,
    int *rawcol ;
    int k, g, i, a, b  ; 
    double ya, yb, yaa, ybb, p1, p2, p3, p4, en ;
-   double z, h1, yt ;
+   double yt ;
 
 
    ZALLOC(rawcol, nrows, int) ;
@@ -953,12 +949,10 @@ void f4y(double *estn,  SNP *cupt,
 
    ya = a = c1[0] ;
    yb = b = c1[1] ;
-   z = ya + yb ;
 
 
    yt = ya+yb ;
    p1 = ya/yt ;       
-   h1 = ya*yb/(yt*(yt-1.0)) ;
 
    yaa = c2[0] ;
    ybb = c2[1] ;
@@ -1564,7 +1558,7 @@ doadmlin(double *jest, double *jsig, double *zlin, double *var, SNP **xsnplist, 
 {
 
    int kret ;
-   int ng3, ng2 ;
+   int ng3 ;
    int k, i, col, d ; 
    double y ;
    SNP *cupt ;
@@ -1579,7 +1573,6 @@ doadmlin(double *jest, double *jsig, double *zlin, double *var, SNP **xsnplist, 
    double *estmat, *zl, *rhs, errest ;
    double *vmean, **vjmean ;
    
-   ng2 = numeg*numeg ;
    ng3 = numeg*numeg*numeg ;
 
    ZALLOC(f3, ng3, double) ;

@@ -140,11 +140,10 @@ double xxlikex(int m, double a, double logsum , double lsum)
 double xxliked(int m, double a, double logsum , double lsum)   
 // first deriv wrt a
 {
-  double p , yl = 0.0 ;
+  double yl = 0.0 ;
   double ym , x, var, vard ;
   int j ;
 
-  p = 0.5* (double) (m+1) ;
   ym = (double) m ;
   var = lsum/ (2.0*a*ym) ;
   vard = -var/a ;
@@ -168,11 +167,10 @@ double xxliked(int m, double a, double logsum , double lsum)
 double xxliked2(int m, double a, double logsum , double lsum)   
 // second deriv wrt a
 {
-  double p , yl = 0.0 ;
+  double yl = 0.0 ;
   double ym , x, var, vard, vard2, y ;
   int j ;
 
-  p = 0.5* (double) (m+1) ;
   ym = (double) m ;
   var = lsum/ (2.0*a*ym) ;
   vard = -var/a ;

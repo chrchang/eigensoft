@@ -45,11 +45,9 @@ ENTRY *xhsearch(ENTRY item, ACTION act)
    
   ENTRY *itempt, *xtempt ;
   int x ;
-  char *ccc ;
   double yload ;
 
   itempt = &item ;
-  ccc = itempt -> key ;
   x = xlookup(itempt -> key, act) ;
   if (debug)
    printf("lookup: %s %d\n", itempt -> key, x) ;
@@ -68,9 +66,9 @@ ENTRY *xhsearch(ENTRY item, ACTION act)
 int xlookup(char *key, ACTION act) 
 {
   ENTRY *xpt ;
-  int xbase, x, k  ; 
+  int x, k  ; 
 
-  xbase = x = xhash(key) ;  
+  x = xhash(key) ;  
   for (;;)  {  
    xpt = xentry + x ;
    if (xpt -> key == NULL) {  

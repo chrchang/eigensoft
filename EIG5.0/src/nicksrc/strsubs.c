@@ -80,7 +80,7 @@ rest begin with non-white space, unless rest is null.
 {
    char *spt ;
    char *ss = NULL, *sx ;
-   int l1,l2 ;
+   int l2 ;
 
    ss = strdup(string) ;
    if (ss==NULL)  {
@@ -101,7 +101,6 @@ rest begin with non-white space, unless rest is null.
      free (ss) ;
      return 1 ;
     }
-    l1 = sx-spt ;
     l2 = strlen(sx) - 1 ;
     *sx = '\0' ;
     strcpy(xword,spt) ;

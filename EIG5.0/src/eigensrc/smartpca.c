@@ -440,7 +440,7 @@ int main(int argc, char **argv)
   Indiv **xindlist ;
   int *xindex, *xtypes = NULL ;
   int nrows, ncols, m, nused ;
-  double *XTX, *cc, *evecs, *ww, weight ; 
+  double *XTX, *cc, *evecs, *ww ; 
   double* partial_sum_lookup_buf = NULL;
   double *lambda, *esize ;
   double zn, zvar ;
@@ -459,7 +459,6 @@ int main(int argc, char **argv)
   int chrom ;
   int outliter, numoutiter, *badlist, nbad ;
   FILE *outlfile, *phylipfile  ;
-  double **eigmoment, **eigindmoment ;
   double *eigkurt, *eigindkurt ;
   double *wmean ;
   char **elist ; 
@@ -819,7 +818,6 @@ int main(int argc, char **argv)
       if (weightmode)
       {
 	// should handle this slightly differently if using partial sum lookup
-	weight = xsnplist[i] -> weight ;
 	vst(cc, cc, xsnplist[i] -> weight, nrows) ;
       }
 
@@ -1058,9 +1056,6 @@ int main(int argc, char **argv)
      }
     }
    }
-
-  eigmoment    = initarray_2Ddouble(numeigs, 5, 0.0) ;
-  eigindmoment = initarray_2Ddouble(numeigs, 5, 0.0) ;
 
   ZALLOC(eigkurt, numeigs, double) ;
   ZALLOC(eigindkurt, numeigs, double) ;
@@ -2706,7 +2701,7 @@ sqz(double *azq, double *acoeffs, int numeigs, int nrows, int *xindex)
 {
 
    int i, j, k ;
-   Indiv *indx ;
+   // Indiv *indx ;
    static int ncall = 0 ; 
 
    ++ncall ;
@@ -2714,7 +2709,7 @@ sqz(double *azq, double *acoeffs, int numeigs, int nrows, int *xindex)
    for (k=0; k<nrows; ++k)  {
     i = xindex[k] ;
     if (i<0) fatalx("zzyuk!\n") ;
-    indx = indivmarkers[i] ; 
+    // indx = indivmarkers[i] ; 
 //  if (ncall == 1) printf("zz %3d %12s %12s %d %d\n", k, indx -> ID, indx -> egroup, indx -> ignore, indx -> affstatus) ;
 
       for (j=0; j<numeigs; ++j) { 
