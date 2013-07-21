@@ -116,7 +116,7 @@ double
 dofstnum(double *fst, double *fstnum, double *fstsig, SNP **xsnplist, int *xindex, int *xtypes, 
  int nrows, int ncols, int numeg,  int nblocks)  ;
 
-double doinbreed(double *inb, double *inbest, double *inbsig, SNP **xsnplist, int *xindex, int *xtypes, 
+void doinbreed(double *inb, double *inbest, double *inbsig, SNP **xsnplist, int *xindex, int *xtypes, 
  int nrows, int ncols, int numeg, int nblocks, Indiv **indivmarkers)     ;
 
 double

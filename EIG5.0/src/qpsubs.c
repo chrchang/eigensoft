@@ -11,7 +11,7 @@ static int inbreed = NO ;
 
 void printsc(int tpat[3][4], double tscore[3], char **eglist, double ymin)  
 {
- int a, b, c, d ;
+ int a ;
  int *tp, k ;
  
  tp = tpat[0] ;
@@ -252,8 +252,7 @@ getcolx(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
  double *xmean, double *xfancy)             
 // side effect set xmean xfancy
 {
- Indiv *indx  ;
- int  j,  n, g, t ;
+ int n ;
  double y, pmean, p ;
  int *rawcol ;
 
@@ -282,8 +281,7 @@ void
 loadxdataind(double *xrow, SNP **snplist, int ind,  int ncols)             
 {
  SNP *cupt ;
- Indiv *indx ;
- int i, j, k, n,  g ;
+ int i, g ;
 
  for (i=0; i<ncols; i++) {  
    cupt = snplist[i] ;
@@ -430,8 +428,7 @@ setfvecs(double *fvecs, double *evecs, int nrows, int numeigs)
 {
 
    double *w ;
-   double xmax, xmin ;
-   int i, j ;
+   int j ;
 
    ZALLOC(w, nrows, double) ;
 
@@ -482,8 +479,7 @@ void countpops(int ***counts, SNP **xsnplist, int *xindex, int *xtypes, int nrow
 void fixrho (double *a, int n) 
 // turn a into correlation matrix
 {
-   double *d, *tt, y ;
-   int i ;  
+   double *d, *tt ;
 
    ZALLOC(d, n, double) ;
    ZALLOC(tt, n*n, double) ;
@@ -503,7 +499,7 @@ void fixrho (double *a, int n)
 }
 void printdiag(double *a, int n) 
 {
-   double *d, *tt, y ;
+   double *d, y ;
    int i ;  
 
    ZALLOC(d, n, double) ;
@@ -549,8 +545,8 @@ double divcol(double *estn, double *estd, SNP *cupt,
    int c1[2], c2[2], *cc ;
    int *rawcol ;
    int k, g, i ; 
-   double ya, yb, yaa, ybb, p1, p2, en, ed ;
-   double z, zz, h1, h2, yt ;
+   double ya, yb, yaa, ybb, en, ed ;
+   double z, zz, h1 ;
 
 
    ZALLOC(rawcol, nrows, int) ;
@@ -603,9 +599,8 @@ void f3y(double *estn,  SNP *cupt,
    int c1[2], c2[2], c3[2], *cc ;
    int *rawcol ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, en, ed ;
-   double z, zz, h1, h2, yt ;
-   double ywt ; 
+   double ya, yb, yaa, ybb, p1, p2, p3, en ;
+   double z, h1, yt ;
 
 
    ZALLOC(rawcol, nrows, int) ;
@@ -662,13 +657,11 @@ void f2sc(double *estn,  double *estd, SNP *cupt, Indiv **indm,
   int *xindex, int *xtypes, int nrows, int type1, int type2, int type3) 
 // processes X chromosome correctly
 {
-   int c1[2], c2[2], c3[2], c4[2], *cc ;
-   int *rawcol ;
+   int c1[2], c2[2], c3[2], *cc ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, p4, en, ed ;
-   double z, zz, h1, h2, h3, yt ;
+   double ya, yb, yaa, ybb, p1, p2, p3, en ;
+   double z, h1, h2, h3, yt ;
    double z2, z3 ;
-   double ywt ; 
    int **ccc, *ccpt[3] ;
 
 
@@ -763,12 +756,10 @@ void f3sc(double *estn,  double *estd, SNP *cupt, Indiv **indm,
   int *xindex, int *xtypes, int nrows, int type1, int type2, int type3) 
 // processes X chromosome correctly
 {
-   int c1[2], c2[2], c3[2], c4[2], *cc ;
-   int *rawcol ;
+   int c1[2], c2[2], c3[2], *cc ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, p4, en, ed ;
-   double z, zz, h1,  yt ;
-   double ywt ; 
+   double ya, yb, yaa, ybb, p1, p2, p3, en ;
+   double z, h1, yt ;
    int **ccc, *ccpt[3] ;
 
 
@@ -862,11 +853,9 @@ void f4yx(double *estn,  SNP *cupt, Indiv **indm,
 // processes X chromosome correctly
 {
    int c1[2], c2[2], c3[2], c4[2], *cc ;
-   int *rawcol ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, p4, en, ed ;
-   double z, zz, h1, h2, yt ;
-   double ywt ; 
+   double ya, yb, yaa, ybb, p1, p2, p3, p4, en ;
+   double z, h1, yt ;
    int **ccc ;
 
 
@@ -936,9 +925,8 @@ void f4y(double *estn,  SNP *cupt,
    int c1[2], c2[2], c3[2], c4[2], *cc ;
    int *rawcol ;
    int k, g, i, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, p4, en, ed ;
-   double z, zz, h1, h2, yt ;
-   double ywt ; 
+   double ya, yb, yaa, ybb, p1, p2, p3, p4, en ;
+   double z, h1, yt ;
 
 
    ZALLOC(rawcol, nrows, int) ;
@@ -1003,11 +991,9 @@ void fstcolinb(double *estnmat, double *estdmat, SNP *cupt,
  like fstcoly but a matrix of populations so data is only accessed once 
 */
 {
-   int *c1, *c2, *cc ;
+   int *c1, *cc ;
    int *rawcol ;
-   int k, g, i, j, a, b  ; 
-   double ya, yb, yaa, ybb, p1, p2, en, ed ;
-   double z, zz, h1, h2, yt ;
+   int k, g, i, a ; 
    double ywt ; 
    int **ccc, *gg, **ddd ;
    static int ncall = 0 ;
@@ -1350,8 +1336,6 @@ double dohzg(double *top, double *bot, SNP **xsnplist, int *xindex, int *xtypes,
 
 {
 
-   int t1, t2 ;
-   int c1[2], c2[2], *cc ;
    int *rawcol, *popall, *pop0, *pop1 ;
    int k, g, i, col, j ; 
    double ya, yb, y ;
@@ -1532,7 +1516,7 @@ void corrwjack(double *xrho, double *xsig, double *z1, double *z2, int ncols, in
 double crho(double *stats) 
 {
 /* correlation from 6 sufficient statistics */
- double m1, m2,  top, bot, b1, b2, rr ;
+ double m1, m2,  top, b1, b2, rr ;
  double s1, s2, s11, s22, s12, yn ;
  static int ncall = 0 ;
 
@@ -1580,19 +1564,15 @@ doadmlin(double *jest, double *jsig, double *zlin, double *var, SNP **xsnplist, 
  int nrows, int ncols, int numeg, int nblocks, double scale, Indiv **indm)     
 {
 
-   int t1, t2, kret ;
-   int a, b, c ;
+   int kret ;
    int ng3, ng2 ;
-   int c1[2], c2[2], *cc ;
-   int *rawcol, *popall, *pop0, *pop1 ;
-   int k, g, i, col, j, d ; 
-   double ya, yb, y, mean ;
+   int k, i, col, d ; 
+   double y ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
    double *w1, *w2, *w3 ;
    double ytop, ybot ;
-   double y1, y2, yscal ;
    double xest, xsig, ynominal ;
    int bnum  ;
 
@@ -1732,19 +1712,14 @@ dof3(double *f3, double *f3sig, SNP **xsnplist, int *xindex, int *xtypes,
  int nrows, int ncols, int numeg, int nblocks, double scale, int mode)     
 {
 
-   int t1, t2 ;
    int a, b, c ;
    int ng3 ;
-   int c1[2], c2[2], *cc ;
-   int *rawcol, *popall, *pop0, *pop1 ;
-   int k, g, i, col, j ; 
-   double ya, yb, y, jest, jsig, mean ;
+   int k, col ; 
+   double jest, jsig, mean ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
    double *w1, *w2, *w3 ;
-   double ytop, ybot ;
-   double y1, y2, yscal ;
    int bnum  ;
    double *estmat ;
    
@@ -1890,19 +1865,15 @@ dof4(double *f4, double *f4sig, SNP **xsnplist, int *xindex, int *xtypes,
  int nrows, int ncols, int numeg, int nblocks, double scale, int mode)     
 {
 
-   int t1, t2 ;
    int a, b, c, d ;
    int ng4 ;
-   int c1[2], c2[2], *cc ;
-   int *rawcol, *popall, *pop0, *pop1 ;
-   int k, g, i, col, j ; 
-   double ya, yb, y, jest, jsig, mean ;
+   int k, col ; 
+   double jest, jsig, mean ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
    double *w1, *w2, *w3 ;
-   double ytop, ybot ;
-   double y1, y2, yscal ;
+   double ytop ;
    int bnum  ;
    int nloop = 0 ;
    
@@ -2098,26 +2069,22 @@ double dump4(double *x, int a, int b, int c, int d, int n)
    return val ;
 }
 
-double doinbreed(double *inb, double *inbest, double *inbsig, SNP **xsnplist, int *xindex, int *xtypes, 
+void doinbreed(double *inb, double *inbest, double *inbsig, SNP **xsnplist, int *xindex, int *xtypes, 
  int nrows, int ncols, int numeg, int nblocks, Indiv **indivmarkers)     
 
 {
 
-   int t1, t2 ;
-   int a, b ;
-   int c1[2], c2[2], *cc ;
-   int *rawcol, *popall, *pop0, *pop1 ;
-   int t, k, g, i, col, j ; 
-   double ya, yb, y, jest, jsig, mean ;
+   int a ;
+   int t, k, i, col, j ; 
+   double y, jest, jsig, mean ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
    double *w1, *w2, *w3 ;
    double ytop, ybot ;
-   double y1, y2, yscal ;
    int bnum  ;
-   int nloop = 0, fstdnum =0  ;
-   double *ztop, *zbot, qtop, qbot ;
+   int nloop = 0 ;
+   double *ztop, *zbot ;
    char **eglist ;  
 
    indm = indivmarkers ;
@@ -2265,12 +2232,9 @@ dofstnumx(double *fst, double *fstest, double *fstsig, SNP **xsnplist, int *xind
 
 {
 
-   int t1, t2 ;
    int a, b ;
-   int c1[2], c2[2], *cc ;
-   int *rawcol, *popall, *pop0, *pop1 ;
-   int t, k, g, i, col, j ; 
-   double ya, yb, y, jest, jsig, mean ;
+   int t, k, i, col, j ; 
+   double jest, jsig, mean ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
@@ -2279,7 +2243,7 @@ dofstnumx(double *fst, double *fstest, double *fstsig, SNP **xsnplist, int *xind
    double y1, y2, yscal ;
    int bnum  ;
    int nloop = 0, fstdnum =0  ;
-   double *ztop, *zbot, qtop, qbot ;
+   double *ztop, *zbot ;
    char **eglist ;  
 
    indm = indivmarkers ;
@@ -2562,7 +2526,6 @@ static void wjackestx(double *est, double *sig, double mean, double *jmean, doub
 
   double *tdiff, *hh, *xtau, *w1, *w2 ;  
   double jackest, yn, yvar ;  
-  int k ;
 
   if (g<=1) fatalx("(wjackest) number of blocks <= 1\n") ;
   ZALLOC(tdiff, g, double) ;
@@ -2612,11 +2575,10 @@ void ndfst5(double *zzest, double *zzsig, double **zn, double **zd, int ncols, i
 {
 #define NPAR  5
    double *djack, *wjack ;
-   double qest, jest, jsig ;
-   double y1, y2 ;
+   double jest, jsig ;
    int bnum, i, k ;
    int a, b, c ;
-   double *gn, *gd, **xn, **xd, *xx, *qqest, *test, *tn, *td, **xqest ;
+   double *gn, *gd, **xn, **xd, *xx, *qqest, *tn, *td, **xqest ;
 
    ZALLOC(gn, 4*4, double)  ;
    ZALLOC(gd, 4*4, double)  ;
@@ -2745,9 +2707,8 @@ void
 setwt(SNP **snpmarkers, int numsnps, Indiv **indivmarkers, int nrows, 
   int *xindex, int *xtypes, char *outpop, char **eglist, int numeg) 
 {
- int *rawcol ; 
  SNP *cupt ; 
- int i, k, j, t, kk, maxeg ;
+ int i, k, j, t, maxeg ;
  int a0, a1, aa ;
  int **ccx, **ccc, *cc ;
  double wt, p ;
@@ -2860,8 +2821,6 @@ dohzgjack(double *hest, double *hsig, SNP **xsnplist, int *xindex, int *xtypes,
  int nrows, int ncols, int numeg, int *bcols, int nblocks)     
 {
 
-   int t1, t2 ;
-   int c1[2], c2[2], *cc ;
    int *rawcol, *popall, *pop0, *pop1 ;
    int k, g, i, col, j ; 
    double ya, yb, y, jest, jsig, mean ;
@@ -3027,9 +2986,9 @@ void wjackvestx(double *vest, double *var, int d, double *mean, double **jmean, 
 {
 
   double *xtau, *hh ;  
-  double *jackest, yn, yvar ;  
+  double *jackest, yn ;
   double *wa ;
-  int j, k ;
+  int k ;
   double y1, y2 ;
 
   if (g<=1) fatalx("(wjackvest) not enough blocks\n") ;
@@ -3085,14 +3044,12 @@ int f3yyx(double *estmat,  SNP *cupt,
   int *xindex, int *xtypes, int nrows, int numeg, Indiv **indm)
 {
    int *c1, *c2, *c3, *cc ;
-   int *rawcol ;
-   int k, g, i, a, b, c  ; 
-   int a0, a1, kret ;
-   double ya, yb, yaa, ybb, p1, p2, p3, en, ed ;
+   int k, g, a, b, c  ; 
+   int kret ;
+   double ya, yb, yaa, ybb, p1, p2, p3, en ;
    double z, zz, h1, h2, yt ;
-   double ywt ; 
 
-   int **ccc, *gg, **ccx ;
+   int **ccc, **ccx ;
    static int ncall = 0 ;
 
 
@@ -3182,12 +3139,11 @@ void f3yy(double *estmat,  SNP *cupt,
 {
    int *c1, *c2, *c3, *cc ;
    int *rawcol ;
-   int k, g, i, a, b, c  ; 
-   double ya, yb, yaa, ybb, p1, p2, p3, en, ed ;
+   int k, g, a, b, c  ; 
+   double ya, yb, yaa, ybb, p1, p2, p3, en ;
    double z, zz, h1, h2, yt ;
-   double ywt ; 
 
-   int **ccc, *gg, **ccx ;
+   int **ccc, **ccx ;
    static int ncall = 0 ;
 
 
@@ -3341,8 +3297,8 @@ void
 calchetinbreed(int *c1,  double *phet, double *phetin) 
 {
 
-  double s, t, a, b, h1, h2, ex, en, ed ;
-  double x0, x1, x2, y0, y1, y2 ;       
+  double s, h1 ;
+  double x0, x1, x2 ;
 
   *phet = *phetin = -1.0 ;
   s = intsum(c1, 3) ;
