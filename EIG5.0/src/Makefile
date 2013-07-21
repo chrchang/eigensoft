@@ -1,7 +1,7 @@
 CC = gcc
 
-CFLAGS = -g -pg -I../include -O2 -Wall
-LDFLAGS = -I../include -pthread
+CFLAGS = -g -pg -I../include -arch x86_64 -O2 -Wall
+LDFLAGS = -I../include -arch x86_64 -pthread
 
 ND=nicksrc
 ED=eigensrc
@@ -16,13 +16,6 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 LAPACK = -framework Accelerate
 ATLAS_LAPACK = -framework Accelerate
-CFLAGS = -g -pg -I../include -O2 -Wall
-else
-ifeq ($(UNAME), MINGW32_NT-6.2)
-LAPACK = -Wl,-Bstatic -L. lapack/liblapack.a -L. lapack/librefblas.a
-ATLAS_LAPACK = -Wl,-Bstatic -L. lapack/liblapack.a -L. lapack/librefblas.a
-LDFLAGS = -pg -I../include -static-libgcc
-endif
 endif
 
 EXE = convertf mergeit smartpca smartrel pcatoy smarteigenstrat twstats eigenstrat eigenstratQTL pca
@@ -46,14 +39,8 @@ NLIBOBJS = $(ND)/gauss.o $(ND)/gds.o $(ND)/getpars.o $(ND)/linsubs.o $(ND)/sorti
 
 
 # ----- define TW table in statsubs
-ifeq ($(UNAME), MINGW32_NT-6.2)
-$(ND)/statsubs.o: $(ND)/statsubs.c
-	$(CC) -c $(CFLAGS) -DTWTAB="\"/c/msys/home/Dog of Justice/eigensoft/EIG5.0/src/smarttables/twtable\\\"" -o $@ $<
-else
 $(ND)/statsubs.o: $(ND)/statsubs.c
 	$(CC) -c $(CFLAGS) -DTWTAB=$(TWTAB) -o $@ $<
-endif
-
 
 # ----- build nicksrc/libnick.a
 $(NLIB):	$(NLIBOBJS)
@@ -71,16 +58,16 @@ mergeit:	mergeit.o mcio.o admutils.o $(NLIB)
 	$(CC) $(LDFLAGS) $^ -o $@ $(MATHLIB) 
 
 pcatoy: 	eigensrc/pcatoy.o eigensrc/eigsubs.o eigensrc/eigx.o $(NLIB)
-	gfortran -O2 -o $@ $(LDFLAGS) $^ $(LAPACK) $(MATHLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
 
 smartpca:	$(ED)/smartpca.o twsubs.o mcio.o qpsubs.o admutils.o egsubs.o regsubs.o \
 		$(ED)/eigsubs.o  \
 		$(ED)/exclude.o $(ED)/smartsubs.o $(ED)/eigx.o $(NLIB)
-	gfortran -O2 -o $@ $(LDFLAGS) $^ $(LAPACK) $(MATHLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
 
 smartrel:	$(ED)/smartrel.o twsubs.o mcio.o qpsubs.o admutils.o egsubs.o regsubs.o \
 		$(ED)/eigsubs.o $(ED)/eigx.o $(ED)/smartsubs.o $(NLIB)    
-	gfortran -O2 -o $@ $(LDFLAGS) $^ $(LAPACK) $(MATHLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
 
 smarteigenstrat:	$(ED)/smarteigenstrat.o mcio.o admutils.o $(NLIB)
 	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
@@ -95,7 +82,8 @@ eigenstratQTL:	$(ED)/eigenstratQTL.o
 	$(CC) $(LDFLAGS) $^ -o $@  $(MATHLIB)
 
 pca:	$(ED)/eigsubs.o pca.o eigx.o $(NLIB)
-	gfortran -O2 -o $@ $(LDFLAGS) $^ $(LAPACK) $(MATHLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+
 
 
 
