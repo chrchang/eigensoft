@@ -233,7 +233,7 @@ void getcolxf(double *xcol, SNP *cupt, int *xindex,
 int getcolxz(double *xcol, SNP *cupt, int *xindex, int *xtypes, 
   int nrows, int col, double *xmean, double *xfancy, int *n0, int *n1)  ;          
 
-double doinbxx(double *inbans, double *inbsd, SNP **xsnplist, int *xindex, int *xtypes, 
+void doinbxx(double *inbans, double *inbsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ;
 
 void putcol(double *cc, double *xdata, int col, int nrows, int ncols)  ;
@@ -270,7 +270,7 @@ double oldfstcol(double *estn, double *estd, SNP *cupt,
 void jackrat(double *xmean, double *xsd, double *top, double *bot,  int len)  ;
 void domult(double  *tvecs, double  *tblock, int numrow, int len)  ;
 void writesnpeigs(char *snpeigname, SNP **xsnplist, double *ffvecs, int numeigs, int ncols)  ;
-double dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
+void dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ; 
 void fixwt(SNP **snpm, int nsnp, double val) ;
 void sqz(double *azq, double *acoeffs, int numeigs, int nrows, int *xindex) ;
@@ -281,24 +281,17 @@ int main(int argc, char **argv)
 {
 
   char sss[MAXSTR] ;
-  int **snppos ;
-  int *snpindx ;
-  char **snpnamelist, **indnamelist ;
   char **eglist ;
-  int  lsnplist, lindlist, numeg ;
+  int numeg ;
   int i, j, k, k1, k2, pos; 
   int *vv ;
-  SNP *cupt, *cupt1, *cupt2, *cupt3 ;
+  SNP *cupt ;
   Indiv *indx ;
   double y1, y2, y2l, y, y3 ;
-  FILE *twxtestfp;
 
-  int ch1, ch2 ;
-  int fmnum , lmnum ;
-  int num, n0, n1, nkill ;
+  int n0, n1, nkill ;
 
-  int nindiv = 0, e, f, lag=1  ;
-  double xc[9], xd[4], xc2[9] ;
+  int nindiv = 0 ;
   double ychi,  tail, tw ;
   int nignore, numrisks = 1 ;
   double  *xrow, *xpt ; 
@@ -306,15 +299,15 @@ int main(int argc, char **argv)
   Indiv **xindlist ;
   int *xindex, *xtypes = NULL ;
   int nrows, ncols, m, nused ;
-  double *XTX, *cc, *evecs, *ww, weight, *qvec, *qcoord ; 
+  double *XTX, *cc, *evecs, *ww, weight ; 
   double *lambda, *esize ;
   double *tvecs ;
   double zn, zvar ;
   double *fvecs, *fxvecs, *fxscal ;
   double *ffvecs ;
   int weightmode = NO ;
-  double chisq, ynrows ;
-  int *numhits, t, g, tt ;  
+  double ynrows ;
+  int t, tt ;  
   double *xmean, *xfancy ;
   double *ldvv, ynumsnps ; // for grm
   int *ldsnpbuff ;
@@ -322,14 +315,11 @@ int main(int argc, char **argv)
   double *fstans, *fstsd ; 
   double *inbans, *inbsd ; 
 
-  int chrom,  numclear ;
-  double gdis ;
+  int chrom ;
   int outliter, numoutiter, *badlist, nbad ;
-  int a, b, kmax, kmin ;
   FILE *outlfile, *phylipfile  ;
   double **eigmoment, **eigindmoment ;
   double *eigkurt, *eigindkurt ;
-  double *snpsc ; 
   double *wmean ;
   char **elist ; 
   double *shrink ; 
@@ -1164,11 +1154,9 @@ int main(int argc, char **argv)
 void readcommands(int argc, char **argv) 
 
 {
-  int i,haploid=0;
+  int i ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n, t ;
+  int t ;
 
   while ((i = getopt (argc, argv, "p:vV")) != -1) {
 
@@ -1353,8 +1341,8 @@ dottest(char *sss, double *vec, char **eglist, int numeg, int *xtypes, int len)
 {
    double *w1 ; 
    int *xt ;
-   int i, k1, k2, k, j, n, x1, x2 ;
-   double y1, y2, ylike, yl0, yl1, yl2 ;
+   int i, k1, k2, k, n, x1, x2 ;
+   double ylike ;
    double ychi ;
    double *wmean ;
    int imax, imin, *isort ;
@@ -1362,8 +1350,7 @@ dottest(char *sss, double *vec, char **eglist, int numeg, int *xtypes, int len)
 
    char ss1[MAXSTR] ;
    char ss2[MAXSTR] ;
-   char sshit[4] ;
-   double tail, ans, ftail, ftailx, ansx ; 
+   double ans, ftail, ftailx, ansx ; 
 
    ZALLOC(wmean, numeg, double) ;
    ZALLOC(w1, len + numeg, double) ;
@@ -1450,7 +1437,7 @@ double anova(double *vec, int len, int *xtypes, int numeg)
 // anova 1 but f statistic
 {
    int i, k ; 
-   double y1, y2, ylike, top, bot, ftail ;  
+   double y1, top, bot, ftail ;  
    double *w0, *w1, *popsize, *wmean ;
 
    static int ncall2  = 0 ;
@@ -1568,7 +1555,7 @@ void publishit(char *sss, int df, double chi)
       if (chisqmode) {
        if (ncall==1) printf("## Anova statistics for population differences along each eigenvector:\n");
        if (ncall==1) printf("%40s %6s %9s %12s\n", "", "dof", "chisq", "p-value") ;
-       printf("%40s %6d %9.3f",ss2, ss2, df, chi) ;
+       printf("%40s %6d %9.3f",ss2, df, chi) ;
        tail = rtlchsq(df, chi) ;  
        printf(" %12.6g", tail) ;
       }
@@ -1819,14 +1806,12 @@ int ldregx(double *gsource, double *gtarget, double *res, int rsize,
 }
 
 
-double dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
+void dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) 
 
 {
 
-   int t1, t2 ;
    int nblocks, xnblocks ;  
-   double y, sd ; 
    int *blstart, *blsize ;
    double *xfst ;
 
@@ -2114,13 +2099,12 @@ getcolxz(double *xcol, SNP *cupt, int *xindex, int *xtypes, int nrows, int col,
 // side effect set xmean xfancy and count variant and reference alleles
 // returns missings after fill in
 {
- Indiv *indx  ;
  int   j,  n, g, t, k, kmax = -1 ;
- double y, pmean, p, yfancy ;
+ double y, pmean, yfancy ;
  int *rawcol ;
- int **ccc ;
  int c0, c1, nmiss ;
- double *popnum, *popsum ;
+ double* popnum = NULL;
+ double* popsum = NULL;
 
   if (usepopsformissing) { 
    ZALLOC(popnum, MAXPOPS+1, double) ;
@@ -2178,7 +2162,7 @@ getcolxz(double *xcol, SNP *cupt, int *xindex, int *xtypes, int nrows, int col,
     *n0 = -1 ; 
     *n1 = -1 ;
    }
-   return ;
+   return -1;
   }
   vst(xcol, xcol, yfancy, nrows) ;
   if (xmean != NULL) {
@@ -2214,9 +2198,8 @@ getcolxf(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
  double *xmean, double *xfancy)
 // side effect set xmean xfancy
 {
- Indiv *indx  ;
- int  j,  n, g, t ;
- double y, pmean, p, yfancy ;
+ int n ;
+ double pmean, yfancy ;
  int *rawcol ;
 
   if (xmean != NULL) {
@@ -2243,13 +2226,11 @@ getcolxf(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
   free(rawcol) ;
 }
 
-double doinbxx(double *inbans, double *inbsd, SNP **xsnplist, int *xindex, int *xtypes, 
+void doinbxx(double *inbans, double *inbsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) 
 {
 
-   int t1, t2 ;
    int nblocks, xnblocks ;  
-   double y, sd ; 
    int *blstart, *blsize ;
    double *xinb ;
 
@@ -2345,12 +2326,11 @@ void dumpgrmid(char *fname, Indiv **indivmarkers, int *xindex, int numid)
 void
 dumpgrmbin(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  
 {
-  int a, b, s, xa, xb, maxs ;
+  int a, b, xa, xb ;
   double y ;
-  FILE *fff ;
   char sss[256] ;
   char *bb ;  
-  int wout, numout, fdes, ret ;
+  int wout, numout, fdes, ret = 0 ;
   float yfloat ;
   
   if (sizeof(yfloat) != 4) fatalx("grm binary only supported for 4 byte floats\n") ;
@@ -2410,7 +2390,7 @@ dumpgrmbin(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarker
 void
 dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  
 {
-  int a, b, s, xa, xb, maxs ;
+  int a, b, xa, xb ;
   double y ;
   FILE *fff ;
   char sss[256] ;
