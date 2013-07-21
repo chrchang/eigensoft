@@ -10,12 +10,11 @@ int K, L, NSAMPLES, nSNP;
 
 int main(int argc, char **argv)
 {
-  int k, x, m, n, *ischr2, *rs, tempint, maxm, Emaxm, i, nflags;
-  double *xx, *LCT, thresh, maxchisq, Emaxchisq, *iscase, *evec;
-  double *xxcorr, *iscasecorr, gamma, rowsum, rowsum1, *V, denom;
-  double a00, a01, a11, tempdouble;
+  int k, x, m, n, i, nflags;
+  double *xx, *iscase;
+  double *iscasecorr, gamma, rowsum, rowsum1, *V, denom;
+  double tempdouble;
   double chisq, Echisq;
-  char mystring[15];
   char Xchar;
   FILE *fp, *fppheno, *fppca, *fpout;
   char *INFILE = NULL;
