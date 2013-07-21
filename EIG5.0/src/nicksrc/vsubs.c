@@ -1425,12 +1425,16 @@ double hlife(double val)
     return -log(2.0)/log(val) ;
 
 }
+
+#ifndef _WIN32
+// (MinGW does not support sbrk().)
 void *topheap () 
 // find top of heap (address).  Useful for finding memory leaks 
 {
 
   return sbrk(0) ;
 }
+#endif
 
 void swap (double *pa, double *pb) 
 {

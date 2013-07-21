@@ -137,7 +137,9 @@ int cstripit(char **a, char **b, int *x, int len) ;
 void mapit(int *a, int *b, int n, int inval, int outval) ;
 int ifall(int n, int k)  ;  // falling factorial = n (n-1) (n-2) ... (n-k+1)
 double hlife(double val) ;
+#ifndef _WIN32
 void *topheap () ;
+#endif
 
 void swap (double *pa, double *pb) ;
 void iswap (int *pa, int *pb) ;
