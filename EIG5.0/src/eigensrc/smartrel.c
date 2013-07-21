@@ -240,7 +240,7 @@ int main(int argc, char **argv)
   Indiv **xindlist ;
   int *xindex ;
   int nrows, ncols, m ;
-  double *XTX, *cc, *evecs, *ww, weight ;
+  double *XTX, *cc, *evecs, *ww ;
   double *lambda ;
   double *tvecs ;
   int weightmode = NO ;
@@ -470,7 +470,6 @@ int main(int argc, char **argv)
 
       if (weightmode) 
       {
-        weight = xsnplist[i] -> weight ;
         vst(cc, cc, xsnplist[i] -> weight, nrows) ;
       }
       if (ldregress>0) 
