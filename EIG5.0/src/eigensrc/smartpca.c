@@ -288,7 +288,7 @@ double oldfstcol(double *estn, double *estd, SNP *cupt,
 
 void jackrat(double *xmean, double *xsd, double *top, double *bot,  int len)  ;
 // void domult_increment_lookup(pthread_t* threads, double* XTX_lower_diag, double* tblock, int numrow, unsigned int len, double* partial_sum_lookup_buf);
-void domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, double* tblock_transposed, int marker_ct, uint32_t indiv_ct);
+void domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, int marker_ct, uint32_t indiv_ct);
 void writesnpeigs(char *snpeigname, SNP **xsnplist, double *ffvecs, int numeigs, int ncols)  ;
 void dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ; 
@@ -411,8 +411,9 @@ copy_transposed(double* orig_matrix, uintptr_t orig_row_ct, uintptr_t orig_col_c
 
 // make these file scope so multithreading works
 static double* g_XTX_lower_diag;
-static double* g_tblock_transposed;
+static double* g_tblock;
 static uint32_t g_block_size;
+static uintptr_t g_indiv_ct;
 static uint32_t g_thread_start[MAX_THREADS_P1];
 
 int main(int argc, char **argv)
@@ -467,14 +468,17 @@ int main(int argc, char **argv)
   
 
   int xblock ;
+  int blocksize = 1024;
+  /*
 #ifdef __LP64__
   int blocksize = 20;
 #else
   int blocksize = 10;
 #endif
+  */
   double *tblock ;
-  // better memory access patterns in inner loop
-  double* tblock_transposed = NULL;
+  // better memory access patterns in inner loop?
+  // double* tblock_transposed = NULL;
 
   OUTLINFO *outpt ;
 
@@ -689,7 +693,7 @@ int main(int argc, char **argv)
     // cannot use lookup table if ldregress > 0
     ZALLOC(partial_sum_lookup_buf, 131072, double);
   } else {
-    ZALLOC(tblock_transposed, nrows*blocksize, double) ;
+    // ZALLOC(tblock_transposed, nrows*blocksize, double) ;
   }
 
   ZALLOC(lambda, nrows, double) ;
@@ -840,8 +844,8 @@ int main(int argc, char **argv)
 	if (partial_sum_lookup_buf) {
           // domult_increment_lookup(threads, XTX, tblock, xblock, nrows, partial_sum_lookup_buf);
 	} else {
-	  copy_transposed(tblock, xblock, nrows, tblock_transposed);
-          domult_increment_normal(threads, thread_ct, XTX, tblock, tblock_transposed, xblock, nrows);
+	  // copy_transposed(tblock, xblock, nrows, tblock_transposed);
+          domult_increment_normal(threads, thread_ct, XTX, tblock, xblock, nrows);
 	}
         xblock = 0 ;
         vzero(tblock, nrows*blocksize) ;
@@ -853,8 +857,8 @@ int main(int argc, char **argv)
       if (partial_sum_lookup_buf) {
         // domult_increment_lookup(threads, XTX, tblock, xblock, nrows, partial_sum_lookup_buf) ;
       } else {
-	copy_transposed(tblock, xblock, nrows, tblock_transposed);
-        domult_increment_normal(threads, thread_ct, XTX, tblock, tblock_transposed, xblock, nrows);
+	// copy_transposed(tblock, xblock, nrows, tblock_transposed);
+        domult_increment_normal(threads, thread_ct, XTX, tblock, xblock, nrows);
       }
     }
     // symit(XTX, nrows);
@@ -1087,9 +1091,11 @@ int main(int argc, char **argv)
     free(partial_sum_lookup_buf);
   }
   free(tblock);
+  /*
   if (tblock_transposed) {
     free(tblock_transposed);
   }
+  */
   if (regmode) {
    ZALLOC(trow, ncols, double) ;
    ZALLOC(rhs, ncols, double) ; 
@@ -2537,33 +2543,35 @@ domult_increment_lookup(pthread_t* threads, double *XTX_lower_diag, double *tblo
 
 THREAD_RET_TYPE block_increment_normal(void* arg) {
   uintptr_t tidx = (uintptr_t)arg;
-  uintptr_t cur_indiv_idx = g_thread_start[tidx];
+  uintptr_t start_indiv_idx = g_thread_start[tidx];
   uintptr_t end_indiv_idx = g_thread_start[tidx + 1];
+  uintptr_t indiv_ct = g_indiv_ct;
   uint32_t block_size = g_block_size;
-  double* tblock_transposed = g_tblock_transposed;
-  double* write_ptr = &(g_XTX_lower_diag[(cur_indiv_idx * (cur_indiv_idx + 1)) / 2]);
-  double* cur_tbt_start;
-  double* tbt_ptr2;
-  double acc;
+  double* write_start_ptr = &(g_XTX_lower_diag[(start_indiv_idx * (start_indiv_idx + 1)) / 2]);
+  double* write_ptr;
+  double* tblock;
+  double* tblock_read_ptr;
+  double cur_tblock_val;
+  uintptr_t cur_indiv_idx;
   uintptr_t indiv_idx2;
   uint32_t bidx;
-  for (; cur_indiv_idx < end_indiv_idx; cur_indiv_idx++) {
-    cur_tbt_start = &(tblock_transposed[cur_indiv_idx * block_size]);
-    tbt_ptr2 = tblock_transposed;
-    for (indiv_idx2 = 0; indiv_idx2 <= cur_indiv_idx; indiv_idx2++) {
-      acc = 0;
-      for (bidx = 0; bidx < block_size; bidx++) {
-        acc += cur_tbt_start[bidx] * (*tbt_ptr2++);
+  for (bidx = 0; bidx < block_size; bidx++) {
+    write_ptr = write_start_ptr;
+    tblock = &(g_tblock[bidx * indiv_ct]);
+    for (cur_indiv_idx = start_indiv_idx; cur_indiv_idx < end_indiv_idx; cur_indiv_idx++) {
+      cur_tblock_val = tblock[cur_indiv_idx];
+      tblock_read_ptr = tblock;
+      for (indiv_idx2 = 0; indiv_idx2 <= cur_indiv_idx; indiv_idx2++) {
+	*write_ptr += cur_tblock_val * (*tblock_read_ptr++);
+	write_ptr++;
       }
-      *write_ptr += acc;
-      write_ptr++;
     }
   }
   THREAD_RETURN;
 }
 
 void
-domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, double* tblock_transposed, int block_size, uint32_t indiv_ct)
+domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, int block_size, uint32_t indiv_ct)
 {
   // tblock[] can have an arbitrary number of distinct values, so can't use
   // bit hacks
@@ -2575,8 +2583,9 @@ domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lowe
     if (fabs(ycheck)>.00001) fatalx("bad ycheck\n");
   }
   g_XTX_lower_diag = XTX_lower_diag;
-  g_tblock_transposed = tblock_transposed;
+  g_tblock = tblock;
   g_block_size = block_size;
+  g_indiv_ct = indiv_ct;
   if (spawn_threads(threads, block_increment_normal, thread_ct)) {
     fatalx("Error: Failed to create thread.\n");
     return;
