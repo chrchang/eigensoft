@@ -1511,7 +1511,7 @@ void readcommands(int argc, char **argv)
    getstring(ph, "xregionname:", &xregionname) ;
    getdbl(ph, "hwfilter:", &nhwfilter) ;
 
-   getint(ph, "numthreads:", &numthreads) ;
+   getint(ph, "numthreads:", &thread_ct_config) ;
 
    printf("### THE INPUT PARAMETERS\n");
    printf("##PARAMETER NAME: VALUE\n");
