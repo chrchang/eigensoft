@@ -555,8 +555,13 @@ void remap(SNP **s1, int nums1, SNP **s2, int nums2)
 char cxx(char *c1, char *c2) 
 {
  if (c1[0] == c2[0]) return c2[1] ; 
- if (c1[0] == c2[1]) return c2[0] ; 
-
+ if (c1[0] == c2[1]) return c2[0] ;
+ // okay, I assume this can never happen, but just to be safe...
+ // (if this really can never happen, the if (c1[0] == c2[1]) check should be
+ // removed)
+ printf("Internal error in convertf.c cxx(): c1[0]=%c, c2[0]=%c, c2[1]=%c.\n", c1[0], c2[0], c2[1]);
+ exit(1);
+ return 0; // shut up the compiler
 }
 void fixaa(SNP *cupt1, SNP *cupt2) 
 {
@@ -594,7 +599,7 @@ void fixaa(SNP *cupt1, SNP *cupt2)
 
 void downsamp(SNP *cupt) 
 {
- int k, g, t, g2 ;
+ int k, g, t;
  static int ncall = 0  ;
 
  ++ncall ;
@@ -753,8 +758,7 @@ void flipstrand(char *fsname, SNP **snpm, int numsnps)
   FILE *fff ;
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
-  char *ss ;
-  int nsplit, n, k ;
+  int nsplit, k ;
   SNP *cupt ; 
 
   if (fsname == NULL) return ;
@@ -785,9 +789,7 @@ void flipsnps(char *fsname, SNP **snpm, int numsnps, int phasedmode)
   FILE *fff ;
   char line[MAXSTR] ;
   char *spt[MAXFF] ;
-  char *ss ;
-  int nsplit, n, k ;
-  SNP *cupt ; 
+  int nsplit, k ;
 
   if (fsname == NULL) return ;
   openit (fsname, &fff, "r") ;
