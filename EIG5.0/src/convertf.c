@@ -178,7 +178,6 @@ int main(int argc, char **argv)
 {
 
   char **eglist;
-  int numeg;
   int i;
   SNP *cupt;
   Indiv *indx;
@@ -327,7 +326,7 @@ int main(int argc, char **argv)
   if (poplistname != NULL) 
   { 
     ZALLOC(eglist, numindivs, char *) ; 
-    numeg = loadlist(eglist, poplistname) ;
+    loadlist(eglist, poplistname) ;
     seteglist(indivmarkers, numindivs, poplistname);
     for (i=0; i<numindivs; ++i)  {     
      indx = indivmarkers[i] ; 

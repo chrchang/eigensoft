@@ -86,7 +86,7 @@ int getsnps(char *snpfname, SNP ***snpmarkpt, double spacing,
   static SNP **snpmarkers ;
   SNP *cupt ;
   int **snppos ;
-  int nreal, nfake, numsnps = 0, i, t ;
+  int nreal, nfake, numsnps = 0, i ;
   int *snpindx ;
   double xspace ;
 
@@ -119,7 +119,7 @@ int getsnps(char *snpfname, SNP ***snpmarkpt, double spacing,
     sdpt = snpraw[i] ;
     snppos[i][0] = sdpt -> chrom ;   
     //  if (sdpt->ignore) snppos[i][0] = 99 ;
-    t = snppos[i][1] = nnint((sdpt -> gpos)*GDISMUL) ;       
+    snppos[i][1] = nnint((sdpt -> gpos)*GDISMUL) ;       
     snppos[i][2] = nnint(sdpt -> ppos) ;      
     // sdpt -> gpos = ((double) t)/ GDISMUL ;
   }
@@ -575,7 +575,6 @@ int loadsnps(SNP **snpm, SNPDATA **snpraw,
   char *sname ;
   int xc = 0, chrom ;
   double fakedis = 0, realdis ;   // gpos for fake marker 
-  double yf, yr ;
   double physpos ;
   double xl, xr, al, ar, fraw ;
   double y ;
@@ -950,7 +949,6 @@ int readtldata(Indiv **indivmarkers, int numindivs, char *inddataname)    {
   char line[MAXSTR] ; 
   char *spt[MAXFF], *sx ; 
   int nsplit, num=0, ind, i ; 
-  int skipit ; 
   Indiv *indx ; 
   int *xcheck ;
  
@@ -961,7 +959,6 @@ int readtldata(Indiv **indivmarkers, int numindivs, char *inddataname)    {
     nsplit = splitup(line, spt, MAXFF) ;  
     if (nsplit == 0) continue ; 
     sx = spt[0] ; 
-    skipit = NO ; 
     if (strcmp(sx, "Indiv_Index") == 0) {
       // hack.  thetafile should be output with leading ## 
       freeup(spt, nsplit) ; 
@@ -1006,7 +1003,6 @@ int readfreqdata(SNP **snpm, int numsnps, char *inddataname)    {
   char line[MAXSTR] ; 
   char *spt[MAXFF], *sx ; 
   int nsplit, num=0, ind ; 
-  int skipit ; 
   SNP *cupt ; 
  
   FILE *fff ; 
@@ -1015,7 +1011,6 @@ int readfreqdata(SNP **snpm, int numsnps, char *inddataname)    {
     nsplit = splitup(line, spt, MAXFF) ;  
     if (nsplit == 0) continue ; 
     sx = spt[0] ; 
-    skipit = NO ; 
     if (sx[0] == '#') {                
       freeup(spt, nsplit) ; 
       continue ; 
@@ -2449,7 +2444,6 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
   char **spt, *sx ;
   char  c ;
   int nsplit, num=0 ;
-  int skipit ;
   int numf, snpnumber, nsnp ;
   int k, n, t, i ;
   FILE *fff ;
@@ -2511,7 +2505,6 @@ int getpedgenos(char *gname, SNP **snpmarkers, Indiv **indivmarkers, int numsnps
     nsplit = splitup(line, spt, numf) ; 
     if (nsplit == 0) continue ;
     sx = spt[0] ;
-    skipit = NO ;
     if (sx[0] == '#') {  	
       freeup(spt, nsplit) ;
       continue ;
@@ -2593,7 +2586,6 @@ void genopedcnt(char *gname, int **gcounts, int nsnp)   {
   char *line ;
   char **spt, *sx ;
   int nsplit, num=0 ;
-  int skipit ;
   int numf, snpnumber, snpnum ; 
   int k, n ;
   FILE *fff ;
@@ -2614,7 +2606,6 @@ void genopedcnt(char *gname, int **gcounts, int nsnp)   {
 
     nsplit = splitup(line, spt, numf) ; 
     if (nsplit == 0) continue ;
-    skipit = NO ;
     sx = spt[0] ;
     if (sx[0] == '#') { 
       freeup(spt, nsplit) ;
@@ -2622,7 +2613,6 @@ void genopedcnt(char *gname, int **gcounts, int nsnp)   {
     }
     if (num==0) {  
      parity = nsplit % 2 ;  
-     ncols = nsplit ; 
      colbase = 6 + parity ;      // QUESTION:  what is the optional seventh column?
     }
 
@@ -3396,9 +3386,7 @@ void snpdecimate(SNP **snpm, int nsnp, int decim, int mindis, int maxdis)  {
 void decimate(SNP **cbuff, int n, int decim, int mindis, int maxdis)   {
   int k, t, u, dis, len ; 
   int *ttt ;
-  SNP *cupt ; 
 
-  cupt = cbuff[0] ;
   if (n<2) return ;
   if (n<decim) return  ;
   ZALLOC(ttt, n, int) ;
@@ -3452,7 +3440,7 @@ int killhir2(SNP **snpm, int numsnps, int numind, double physlim, double genlim,
 #define BADBUFFSIZE 100000 ;
 
   int badbuffsize = BADBUFFSIZE ;
-  int i,j, k, nbad, kmax, kmin, t, j1, j2, lo, hi  ;
+  int i,j, k, nbad, kmax, kmin, j1, j2, lo, hi  ;
   int *gtypes ;
   double *x1, *x2, dis, *p1 ;
   int nkill = 0, tj ;
@@ -3530,7 +3518,6 @@ int killhir2(SNP **snpm, int numsnps, int numind, double physlim, double genlim,
         ++nbad ;
 
       }
-      t = (j1+lo) % 100 ;  
       if (nbad == 0) continue ;  
       vlmaxmin(badbuff, nbad, &kmax, &kmin) ;  
       smax = snpm[kmax] -> score ; 
