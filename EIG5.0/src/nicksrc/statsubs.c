@@ -281,7 +281,7 @@ double conchiv(double *a, int m, int n)
 double z2x2(double *a)                    
 /* a is 2 rows 2 columns.  contingency z-score */
 {
- double *rsum, *csum, ee, tot=0, chsq=0, y, dev00, z ;
+ double *rsum, *csum, ee, tot=0, chsq=0, y, dev00=0, z ;
  int i,j,k,m=2, n=2 ;
 
  ZALLOC(rsum,m,double) ;
@@ -431,7 +431,7 @@ double zprob(double ptail)
 void setzptable() 
 {
    int i ; 
-   double p, z ;
+   double p = 0, z ;
    if (ptable != NULL) free(ptable) ;
    if (ztable != NULL) free(ztable) ;
    ZALLOC(ptable, numbox, double) ;
@@ -476,6 +476,8 @@ int ifirstgt(int val, int *tab, int n)
   for (i=0; i<n; i++) {
    if (val<tab[i]) return i ;
   }
+  fatalx("Internal error in nicksrc/statsubs.c ifirstgt(): tab[] unsorted.\n");
+  return 0;
 }
 
 int firstgt(double val, double *tab, int n) 
@@ -487,6 +489,8 @@ int firstgt(double val, double *tab, int n)
   for (i=0; i<n; i++) {
    if (val<tab[i]) return i ;
   }
+  fatalx("Internal error in nicksrc/statsubs.c firstgt(): tab[] unsorted.\n");
+  return 0;
 }
 
 void mleg(double a1, double a2, double *p, double *lam) 
