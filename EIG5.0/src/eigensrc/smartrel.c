@@ -203,7 +203,7 @@ void clearld(double *ldmat, double *ldvv, int rsize, int n, int nclear)  ;
 void fixrho(double *a, int n) ;
 void printdiag(double *a, int n) ;
 
-int setoutliermode(int mode) ;
+void setoutliermode(int mode) ;
 
 void addoutersym(double *X, double *v, int n)  ;
 void symit(double *X, int n)  ;

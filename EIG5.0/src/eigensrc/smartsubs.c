@@ -4,12 +4,12 @@
 extern int fancynorm, verbose, plotmode, outnum ;
 extern FILE *fstdetails ;
 
-static Indiv **indm ;
-static void wjackestx(double *est, double *sig, double mean, double *jmean, double *jwt, int g)  ;
-static void wjackvestx(double *vest, double *var, int d, double *mean, double **jmean, double *jwt, int g)  ;
+// static Indiv **indm ;
+// static void wjackestx(double *est, double *sig, double mean, double *jmean, double *jwt, int g)  ;
+// static void wjackvestx(double *vest, double *var, int d, double *mean, double **jmean, double *jwt, int g)  ;
 static int  outliermode = 0 ; 
 
-int setoutliermode(int mode)  
+void setoutliermode(int mode)  
 {
  outliermode = mode ;
 }
@@ -24,8 +24,8 @@ ridoutlier(double *evecs, int n, int neigs,
  int nbad = 0 ; 
  OUTLINFO *outpt;
 
- if (outliermode > 1) return ;
- if (n<3) return ;
+ if (outliermode > 1) return 0;
+ if (n<3) return 0;
  ZALLOC(ww, n, double) ;
  ZALLOC(vbad, n, int) ;
  for(j=0;j<n;j++)  {
@@ -56,7 +56,7 @@ ridoutlier(double *evecs, int n, int neigs,
    ZALLOC(w2, n, double) ;
    for (j=0; j<n; j++) {  
      yy = ww[j] ;
-     ww[j] == 0 ;
+     ww[j] = 0 ;
      y1 = asum(ww, n) / (double) (n-1) ;
      vsp(w2, ww, -y1, n) ;
      w2[j] = 0 ;
