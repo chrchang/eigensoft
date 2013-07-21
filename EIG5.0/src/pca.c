@@ -9,12 +9,11 @@ double SIGMATHRESH;
 
 int main(int argc, char **argv)
 {
-  int k, n, m, nn, val1, val2, N, x, tempint, rowvalid, *outlier, i;
+  int k, n, m, nn, rowvalid, *outlier, i;
   int iter, nonewoutliers, nflags;
   char Xchar;
-  double *X, *XTX, rowsum, rowmean, rowmeanbayes, tempdouble, *sigmaoutlier;
+  double *X, *XTX, rowsum, rowmean = 0, rowmeanbayes = 0, *sigmaoutlier;
   double *eval, *evec, sum, summ, sum1, mean, sdev, sigma;
-  char mystring[10];
   FILE *fp, *fpout, *fplog, *fpeval;
   char *INFILE = NULL;
   char *OUTFILE = NULL;
