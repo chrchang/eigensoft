@@ -40,8 +40,8 @@ double oldtwestxx(double *lam, int m, double *pzn,  double *pzvar)
 {
   double lsum, logsum ;
   double *ww ;
-  double  a, p, yn, var ;
-  double ylike, ybase, y, ylmax, ynmax, yld, yld2, ainc, ym ;
+  double  a, yn, var ;
+  double ylike, ybase, ylmax, ynmax = -1.0e20, yld, yld2, ainc, ym ;
   int k ;
 
 
@@ -198,7 +198,7 @@ double doeig2(double *vals, int m, double *pzn, double *ptw)
 {
   static int ncall = 0 ;
   double y, tw, tail ;
-  double zn, zvar, top, bot ;
+  double zn, top, bot ;
   double *evals ;
  
   ++ncall ;
