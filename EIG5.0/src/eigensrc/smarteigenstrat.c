@@ -196,11 +196,12 @@ int main(int argc, char **argv)
 
     if(NSAMPLES*m > MAXSIZE)
     {
-      fprintf(stderr,"OOPS genotype file has > %d genotypes\n",MAXSIZE);
-      fprintf(fpout,"OOPS genotype file has > %d genotypes\n",MAXSIZE);
+      fprintf(stderr,"OOPS genotype file has > %g genotypes\n",MAXSIZE);
+      fprintf(fpout,"OOPS genotype file has > %g genotypes\n",MAXSIZE);
       exit(1);
     }
   }
+  return 0;
 }
 
 
@@ -209,9 +210,6 @@ void readcommands(int argc, char **argv)
   int i;
   char *parname = NULL ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n ;
 
   while ((i = getopt (argc, argv, "p:vV")) != -1) {
 
@@ -350,9 +348,8 @@ void getphenos(int NSAMPLES, double **iscasep, int *outlier,
   double **iscasecorrp, int L, double *V)  {
 
   int k,n;
-  char Xchar;
   double *iscase, *iscasecorr;
-  double rowsum, rowsum1, gamma, denom, tempdouble;
+  double rowsum, rowsum1, gamma, denom ;
 
   /* allocate iscase */
   if ((iscase = (double *)malloc(NSAMPLES*sizeof(*iscase))) == NULL)  
