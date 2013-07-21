@@ -3,7 +3,9 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <stdarg.h>
+#ifndef _WIN32
 #include <sys/times.h>
+#endif
 #include <time.h>
 #include <errno.h>
 #include <sys/types.h>
