@@ -36,8 +36,7 @@ int  minleneig = 10 ;
 int   
 main  (int argc , char **argv) 
 {
-   int mx, nx ;
-   FILE *ifile, *ofile ;
+   FILE *ofile ;
    int nlambda = 0 ;
    int i, m ;
    double zn, zvar, tw, tail ;
@@ -82,6 +81,7 @@ main  (int argc , char **argv)
    }
     fprintf(ofile, "\n") ;
   }
+   return 0;
 }
 
 void readcommands(int argc, char **argv) 
@@ -90,9 +90,6 @@ void readcommands(int argc, char **argv)
   int i ;
   char *parname = NULL ;
   phandle *ph ;
-  char str[5000]  ;
-  char *tempname ;
-  int n ;
 
   while ((i = getopt (argc, argv, "i:o:p:n:m:t:V")) != -1) {
 
