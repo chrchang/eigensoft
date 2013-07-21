@@ -287,7 +287,7 @@ int main(int argc, char **argv)
   int *vv ;
   SNP *cupt ;
   Indiv *indx ;
-  double y1, y2, y2l, y, y3 ;
+  double y1 = 0, y2, y2l, y, y3 ;
 
   int n0, n1, nkill ;
 
@@ -309,8 +309,8 @@ int main(int argc, char **argv)
   double ynrows ;
   int t, tt ;  
   double *xmean, *xfancy ;
-  double *ldvv, ynumsnps ; // for grm
-  int *ldsnpbuff ;
+  double *ldvv = NULL , ynumsnps = 0 ; // for grm
+  int *ldsnpbuff = NULL ;
   int lastldchrom, numld ;
   double *fstans, *fstsd ; 
   double *inbans, *inbsd ; 
@@ -323,7 +323,7 @@ int main(int argc, char **argv)
   double *wmean ;
   char **elist ; 
   double *shrink ; 
-  double *trow, *rhs, *emat, *regans ;
+  double *trow = NULL, *rhs = NULL, *emat = NULL, *regans = NULL ;
   int kk ;
   double *acoeffs, *bcoeffs, *apt, *bpt, *azq, *bzq ;
   
@@ -596,7 +596,7 @@ int main(int argc, char **argv)
 
     numld = 0 ;
     lastldchrom = -1 ;
-    ynumsnps = 0 ; ;
+    ynumsnps = 0 ;
     for (i=0; i<ncols; i++)  {
       cupt = xsnplist[i] ;
       chrom = cupt -> chrom ;
