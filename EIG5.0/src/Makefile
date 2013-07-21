@@ -1,7 +1,7 @@
 CC = gcc
 
-CFLAGS = -g -pg -I../include  -O2 -Wall
-LDFLAGS = -I../include -pthread
+CFLAGS = -g -pg -I../include -arch x86_64 -O2 -Wall
+LDFLAGS = -I../include -arch x86_64 -pthread
 
 ND=nicksrc
 ED=eigensrc

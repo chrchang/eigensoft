@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #include <nicklib.h>
 #include <getpars.h>
@@ -109,6 +111,22 @@ regmode added
 
 */
 
+#if _WIN32
+// just in case we try a Windows port in the future
+#include <windows.h>
+#include <process.h>
+#define pthread_t HANDLE
+#define THREAD_RET_TYPE unsigned __stdcall
+#define THREAD_RETURN return 0
+#define MAX_THREADS 63
+#define MAX_THREADS_P1 64
+#else
+#include <pthread.h>
+#define THREAD_RET_TYPE void*
+#define THREAD_RETURN return NULL
+#define MAX_THREADS 127
+#define MAX_THREADS_P1 128
+#endif
 
 #define MAXFL  50   
 #define MAXSTR  512
@@ -231,7 +249,8 @@ void getcol(double *cc, double *xdata, int col, int nrows, int ncols)  ;
 void getcolxf(double *xcol, SNP *cupt, int *xindex, 
   int nrows, int col, double *xmean, double *xfancy)  ;          
 int getcolxz(double *xcol, SNP *cupt, int *xindex, int *xtypes, 
-  int nrows, int col, double *xmean, double *xfancy, int *n0, int *n1)  ;          
+  int nrows, int col, double *xmean, double *xfancy, int *n0, int *n1)  ;
+// int getcolxz2();
 
 void doinbxx(double *inbans, double *inbsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ;
@@ -268,14 +287,133 @@ double oldfstcol(double *estn, double *estd, SNP *cupt,
   int *xindex, int *xtypes, int nrows, int type1, int type2) ;
 
 void jackrat(double *xmean, double *xsd, double *top, double *bot,  int len)  ;
-void domult(double  *tvecs, double  *tblock, int numrow, int len)  ;
+// void domult_increment_lookup(pthread_t* threads, double* XTX_lower_diag, double* tblock, int numrow, unsigned int len, double* partial_sum_lookup_buf);
+void domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, double* tblock_transposed, int marker_ct, uint32_t indiv_ct);
 void writesnpeigs(char *snpeigname, SNP **xsnplist, double *ffvecs, int numeigs, int ncols)  ;
 void dofstxx(double *fstans, double *fstsd, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg, double blgsize, SNP **snpmarkers, Indiv **indm) ; 
 void fixwt(SNP **snpm, int nsnp, double val) ;
 void sqz(double *azq, double *acoeffs, int numeigs, int nrows, int *xindex) ;
-void dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  ;
+void dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname) ;
 
+uint32_t
+triangle_divide(int64_t cur_prod, int32_t modif)
+{
+  // return smallest integer vv for which (vv * (vv + modif)) is no smaller
+  // than cur_prod, and neither term in the product is negative.  (Note the
+  // lack of a divide by two; cur_prod should also be double its "true" value
+  // as a result.)
+  int64_t vv;
+  if (cur_prod == 0) {
+    if (modif < 0) {
+      return -modif;
+    } else {
+      return 0;
+    }
+  }
+  vv = (int64_t)sqrt((double)cur_prod);
+  while ((vv - 1) * (vv + modif - 1) >= cur_prod) {
+    vv--;
+  }
+  while (vv * (vv + modif) < cur_prod) {
+    vv++;
+  }
+  return vv;
+}
+
+void
+parallel_bounds(uint32_t ct, int32_t start, uint32_t parallel_idx, uint32_t parallel_tot, int32_t* bound_start_ptr, int32_t* bound_end_ptr)
+{
+  int32_t modif = 1 - start * 2;
+  int64_t ct_tot = ((int64_t)ct) * (ct + modif);
+  *bound_start_ptr = triangle_divide((ct_tot * parallel_idx) / parallel_tot, modif);
+  *bound_end_ptr = triangle_divide((ct_tot * (parallel_idx + 1)) / parallel_tot, modif);
+}
+
+// set align to 1 for no alignment
+void
+triangle_fill(uint32_t* target_arr, uint32_t ct, uint32_t pieces, uint32_t parallel_idx, uint32_t parallel_tot, uint32_t start, uint32_t align)
+{
+  int32_t modif = 1 - start * 2;
+  uint32_t cur_piece = 1;
+  int64_t ct_tr;
+  int64_t cur_prod;
+  int32_t lbound;
+  int32_t ubound;
+  uint32_t uii;
+  uint32_t align_m1;
+  parallel_bounds(ct, start, parallel_idx, parallel_tot, &lbound, &ubound);
+  // x(x+1)/2 is divisible by y iff (x % (2y)) is 0 or (2y - 1).
+  align *= 2;
+  align_m1 = align - 1;
+  target_arr[0] = lbound;
+  target_arr[pieces] = ubound;
+  cur_prod = ((int64_t)lbound) * (lbound + modif);
+  ct_tr = (((int64_t)ubound) * (ubound + modif) - cur_prod) / pieces;
+  while (cur_piece < pieces) {
+    cur_prod += ct_tr;
+    lbound = triangle_divide(cur_prod, modif);
+    uii = (lbound - ((int32_t)start)) & align_m1;
+    if ((uii) && (uii != align_m1)) {
+      lbound = start + ((lbound - ((int32_t)start)) | align_m1);
+    }
+    // lack of this check caused a nasty bug earlier
+    if (((uint32_t)lbound) > ct) {
+      lbound = ct;
+    }
+    target_arr[cur_piece++] = lbound;
+  }
+}
+
+void
+symit2(double* XTX, uintptr_t nrows)
+{
+  // unpacks LOWER-triangle-only symmetric matrix representation into regular
+  // square matrix.
+  uintptr_t row_idx;
+  uintptr_t col_idx;
+  double* read_col;
+  double* write_ptr;
+  if (nrows < 3) {
+    if (nrows < 2) {
+      return;
+    }
+    // special case, need to avoid overlapping memcpy
+    XTX[3] = XTX[2];
+    XTX[2] = XTX[1];
+    return;
+  }
+  for (row_idx = nrows - 1; row_idx; row_idx--) {
+    memcpy(&(XTX[row_idx * nrows]), &(XTX[(row_idx * (row_idx + 1)) / 2]), (row_idx + 1) * sizeof(double));
+  }
+  for (row_idx = 0; row_idx < nrows; row_idx++) {
+    read_col = &(XTX[row_idx]);
+    write_ptr = &(XTX[row_idx * nrows + row_idx + 1]);
+    for (col_idx = row_idx + 1; col_idx < nrows; col_idx++) {
+      *write_ptr++ = read_col[col_idx * nrows];
+    }
+  }
+}
+
+void
+copy_transposed(double* orig_matrix, uintptr_t orig_row_ct, uintptr_t orig_col_ct, double* transposed_matrix)
+{
+  uintptr_t new_row_idx;
+  uintptr_t new_col_idx;
+  double* orig_col_ptr;
+  for (new_row_idx = 0; new_row_idx < orig_col_ct; new_row_idx++) {
+    orig_col_ptr = &(orig_matrix[new_row_idx]);
+    for (new_col_idx = 0; new_col_idx < orig_row_ct; new_col_idx++) {
+      *transposed_matrix++ = orig_col_ptr[new_col_idx * orig_col_ct];
+    }
+  }
+}
+
+// make these file scope so multithreading works
+static double* g_XTX_lower_diag;
+static double* g_tblock_transposed;
+static uint32_t g_block_size;
+static uint32_t g_thread_start[MAX_THREADS_P1];
 
 int main(int argc, char **argv)
 {
@@ -300,8 +438,8 @@ int main(int argc, char **argv)
   int *xindex, *xtypes = NULL ;
   int nrows, ncols, m, nused ;
   double *XTX, *cc, *evecs, *ww, weight ; 
+  double* partial_sum_lookup_buf = NULL;
   double *lambda, *esize ;
-  double *tvecs ;
   double zn, zvar ;
   double *fvecs, *fxvecs, *fxscal ;
   double *ffvecs ;
@@ -328,10 +466,20 @@ int main(int argc, char **argv)
   double *acoeffs, *bcoeffs, *apt, *bpt, *azq, *bzq ;
   
 
-  int xblock, blocksize=10000 ;   
-  double *tblock ;  
+  int xblock ;
+#ifdef __LP64__
+  int blocksize = 20;
+#else
+  int blocksize = 10;
+#endif
+  double *tblock ;
+  // better memory access patterns in inner loop
+  double* tblock_transposed = NULL;
 
   OUTLINFO *outpt ;
+
+  pthread_t threads[MAX_THREADS];
+  uint32_t thread_ct;
 
   readcommands(argc, argv) ;
   printf("## smartpca version: %s\n", WVERSION) ;
@@ -535,9 +683,14 @@ int main(int argc, char **argv)
   ZALLOC(xmean, ncols, double) ;
   ZALLOC(xfancy, ncols, double) ;
 
-   ZALLOC(XTX, nrows*nrows, double) ;
-   ZALLOC(evecs, nrows*nrows, double) ;
-   ZALLOC(tvecs, nrows*nrows, double) ;
+  ZALLOC(XTX, nrows*nrows, double) ;
+  ZALLOC(evecs, nrows*nrows, double) ;
+  if (0) {
+    // cannot use lookup table if ldregress > 0
+    ZALLOC(partial_sum_lookup_buf, 131072, double);
+  } else {
+    ZALLOC(tblock_transposed, nrows*blocksize, double) ;
+  }
 
   ZALLOC(lambda, nrows, double) ;
   ZALLOC(esize, nrows, double) ;
@@ -566,6 +719,36 @@ int main(int argc, char **argv)
   }
   else setoutliermode(2) ;
 
+  // try to autodetect number of (virtual) processors, and use that number to
+  // set the thread count.  allow the user to override this in the future
+#if _WIN32
+  SYSTEM_INFO sysinfo;
+  GetSystemInfo(&sysinfo);
+  thread_ct = sysinfo.dwNumberOfProcessors;
+#else
+  i = sysconf(_SC_NPROCESSORS_ONLN);
+  if (i == -1) {
+    thread_ct = 1;
+  } else {
+    thread_ct = i;
+  }
+#endif
+  if (thread_ct > 8) {
+    if (thread_ct > MAX_THREADS) {
+      thread_ct = MAX_THREADS;
+    } else {
+      thread_ct--;
+    }
+  }
+  if (thread_ct > nrows * 2) {
+    thread_ct = nrows / 2;
+    if (!thread_ct) {
+      thread_ct = 1;
+    }
+  }
+  printf("Using %u thread%s.\n", thread_ct, (thread_ct == 1)? "" : "s");
+  triangle_fill(g_thread_start, nrows, thread_ct, 0, 1, 0, 1);
+
   nkill = 0 ;
 
   for (outliter = 1; outliter <= numoutiter ; ++outliter)  {
@@ -579,7 +762,7 @@ int main(int argc, char **argv)
      ncols = loadsnpx(xsnplist, snpmarkers, numsnps, indivmarkers) ;
     }
 
-    vzero(XTX, nrows*nrows) ;
+    vzero(XTX, (nrows*(nrows+1)) / 2) ;
     vzero(tblock, nrows*blocksize) ;
     xblock = 0 ; 
 
@@ -600,7 +783,11 @@ int main(int argc, char **argv)
     for (i=0; i<ncols; i++)  {
       cupt = xsnplist[i] ;
       chrom = cupt -> chrom ;
-      tt = getcolxz(cc, cupt, xindex, xtypes, nrows, i, xmean, xfancy, &n0, &n1) ;
+      if (!partial_sum_lookup_buf) {
+        tt = getcolxz(cc, cupt, xindex, xtypes, nrows, i, xmean, xfancy, &n0, &n1) ;
+      } else {
+        // tt = getcolxz2(&n0, &n1);
+      }
 
       t = MIN(n0, n1) ; 
 
@@ -615,17 +802,18 @@ int main(int argc, char **argv)
        continue ;
       }
 
-     if (weightmode) 
+      if (weightmode)
       {
-        weight = xsnplist[i] -> weight ;
-        vst(cc, cc, xsnplist[i] -> weight, nrows) ;
+	// should handle this slightly differently if using partial sum lookup
+	weight = xsnplist[i] -> weight ;
+	vst(cc, cc, xsnplist[i] -> weight, nrows) ;
       }
 
       if (lastldchrom != chrom)  numld = 0 ;
 
       if (ldregress>0) 
-
       {  
+
         t = ldregx(ldvv, cc, ww, numld, nrows, ldr2lo, ldr2hi) ; 
         if (t<2) {
           bumpldvv(ldvv, cc, &numld, ldregress, nrows, ldsnpbuff, i) ; 
@@ -647,20 +835,30 @@ int main(int argc, char **argv)
 
 /** this is the key code to parallelize */
       if (xblock==blocksize) 
-      {  
-        domult(tvecs, tblock, xblock, nrows) ;
-        vvp(XTX, XTX, tvecs, nrows*nrows) ;
+      {
+	// remember to apply weight if necessary
+	if (partial_sum_lookup_buf) {
+          // domult_increment_lookup(threads, XTX, tblock, xblock, nrows, partial_sum_lookup_buf);
+	} else {
+	  copy_transposed(tblock, xblock, nrows, tblock_transposed);
+          domult_increment_normal(threads, thread_ct, XTX, tblock, tblock_transposed, xblock, nrows);
+	}
         xblock = 0 ;
         vzero(tblock, nrows*blocksize) ;
       }
     }
 
     if (xblock>0) 
-    { 
-     domult(tvecs, tblock, xblock, nrows) ;
-     vvp(XTX, XTX, tvecs, nrows*nrows) ;
+    {
+      if (partial_sum_lookup_buf) {
+        // domult_increment_lookup(threads, XTX, tblock, xblock, nrows, partial_sum_lookup_buf) ;
+      } else {
+	copy_transposed(tblock, xblock, nrows, tblock_transposed);
+        domult_increment_normal(threads, thread_ct, XTX, tblock, tblock_transposed, xblock, nrows);
+      }
     }
-    symit(XTX, nrows) ;
+    // symit(XTX, nrows);
+    symit2(XTX, nrows) ;
     printf("total number of snps killed in pass: %d  used: %d\n", nkill, nused) ;
 
     if (verbose) 
@@ -885,7 +1083,13 @@ int main(int argc, char **argv)
   
   ZALLOC(acoeffs, numindivs*numeigs, double) ; 
   ZALLOC(bcoeffs, numindivs*numeigs, double) ; 
-  free(tvecs) ;
+  if (partial_sum_lookup_buf) {
+    free(partial_sum_lookup_buf);
+  }
+  free(tblock);
+  if (tblock_transposed) {
+    free(tblock_transposed);
+  }
   if (regmode) {
    ZALLOC(trow, ncols, double) ;
    ZALLOC(rhs, ncols, double) ; 
@@ -2180,19 +2384,208 @@ getcolxz(double *xcol, SNP *cupt, int *xindex, int *xtypes, int nrows, int col,
   }
   return nmiss ;
 }
-/** this is the code to parallelize */
-void
-domult(double  *tvecs, double  *tblock, int numrow, int len) 
+
+/*
+int
+getcolxz2() (double *xcol, SNP *cupt, int *xindex, int *xtypes, int nrows, int col,  
+ double *xmean, double *xfancy, int *n0, int *n1)             
+// side effect set xmean xfancy and count variant and reference alleles
+// returns missings after fill in
 {
+ int   j,  n, g, t, k, kmax = -1 ;
+ double y, pmean, yfancy ;
+ int *rawcol ;
+ int c0, c1, nmiss ;
+ double* popnum = NULL;
+ double* popsum = NULL;
+
+  if (usepopsformissing) { 
+   ZALLOC(popnum, MAXPOPS+1, double) ;
+   ZALLOC(popsum, MAXPOPS+1, double) ;
+  }
+
+  c0 = c1 = 0 ;
+  ZALLOC(rawcol, nrows, int) ;
+  n = cupt -> ngtypes ;
+  if (n<nrows) fatalx("bad snp: %s %d\n", cupt -> ID, n) ;
+  getrawcol(rawcol, cupt, xindex, nrows) ;
+  t = 0 ;
+  nmiss = 0 ;
+  for (j=0; j<nrows; ++j) { 
+   g = rawcol[j] ;  
+   if (g<0) { 
+    ++nmiss ; 
+    continue ;  
+   }
+   c0 += g   ;
+   c1 += 2-g ;
+   if (usepopsformissing) { 
+    k = xtypes[j] ;  
+    popsum[k] += (double) g ;
+    popnum[k] += 1.0 ;
+    kmax = MAX(kmax, k) ;
+    ++t ;
+   }
+  }
+  floatit(xcol, rawcol, nrows) ;
+  if ((usepopsformissing) && (nmiss > 0)) {
+   pmean = asum(popsum, kmax+1)/asum(popnum, kmax+1) ;
+   nmiss = 0 ;
+   for (j=0; j<nrows; ++j) { 
+    g = rawcol[j] ;  
+    if (g>=0) continue ;  
+    k = xtypes[j] ; 
+    if (popnum[k] > 0.5)  { 
+      y = popsum[k]/popnum[k] ; 
+      xcol[j] = y ;
+      continue ;
+    }
+    ++nmiss ;
+   }
+  }
+  t = fvadjust(xcol, nrows, &pmean, &yfancy) ;
+  if (t < -99) {  
+   if (xmean != NULL) {
+    xmean[col] = 0.0  ; 
+    xfancy[col] = 0.0  ;
+   }
+   vzero(xcol, nrows) ;
+   free(rawcol) ;
+   if (n0 != NULL) {
+    *n0 = -1 ; 
+    *n1 = -1 ;
+   }
+   return -1;
+  }
+  vst(xcol, xcol, yfancy, nrows) ;
+  if (xmean != NULL) {
+   xmean[col] = pmean*yfancy ; 
+   xfancy[col] = yfancy ;
+  }
+  free(rawcol) ;
+  if (n0 != NULL) {
+   *n0 = c0 ; 
+   *n1 = c1 ;
+  }
+  if (usepopsformissing) { 
+   free(popnum) ;
+   free(popsum) ;
+  }
+  return nmiss ;
+}
+*/
+
+void
+join_threads(pthread_t* threads, uint32_t ctp1)
+{
+  if (!(--ctp1)) {
+    return;
+  }
+#if _WIN32
+  WaitForMultipleObjects(ctp1, threads, 1, INFINITE);
+#else
+  uint32_t uii;
+  for (uii = 0; uii < ctp1; uii++) {
+    pthread_join(threads[uii], NULL);
+  }
+#endif
+}
+
+#if _WIN32
+int32_t
+spawn_threads(pthread_t* threads, unsigned (__stdcall *start_routine)(void*), uintptr_t ct)
+#else
+int32_t
+spawn_threads(pthread_t* threads, void* (*start_routine)(void*), uintptr_t ct)
+#endif
+{
+  uintptr_t ulii;
+  if (ct == 1) {
+    return 0;
+  }
+  for (ulii = 1; ulii < ct; ulii++) {
+#if _WIN32
+    threads[ulii - 1] = (HANDLE)_beginthreadex(NULL, 4096, start_routine, (void*)ulii, 0, NULL);
+    if (!threads[ulii - 1]) {
+      join_threads(threads, ulii);
+      return -1;
+    }
+#else
+    if (pthread_create(&(threads[ulii - 1]), NULL, start_routine, (void*)ulii)) {
+      join_threads(threads, ulii);
+      return -1;
+    }
+#endif
+  }
+  return 0;
+}
+
+/*
+void
+domult_increment_lookup(pthread_t* threads, double *XTX_lower_diag, double *tblock, int numrow, unsigned int len, double* partial_sum_lookup_buf)
+{
+  // only <=7 distinct values in tblock[], so use PLINK 1.5 partial sum lookup
+  // algorithm
   int i ;
-  double ycheck ;
-  vzero(tvecs, len*len) ;
+
   for (i=0; i<numrow; i++) {  
-    ycheck = asum(tblock+i*len, len) ;  
-    if (fabs(ycheck)>.00001) fatalx("bad ycheck\n") ;
+    ;
     addoutersym(tvecs, tblock+i*len, len) ;
   }
 }
+*/
+
+THREAD_RET_TYPE block_increment_normal(void* arg) {
+  uintptr_t tidx = (uintptr_t)arg;
+  uintptr_t cur_indiv_idx = g_thread_start[tidx];
+  uintptr_t end_indiv_idx = g_thread_start[tidx + 1];
+  uint32_t block_size = g_block_size;
+  double* tblock_transposed = g_tblock_transposed;
+  double* write_ptr = &(g_XTX_lower_diag[(cur_indiv_idx * (cur_indiv_idx + 1)) / 2]);
+  double* cur_tbt_start;
+  double* tbt_ptr2;
+  double acc;
+  uintptr_t indiv_idx2;
+  uint32_t bidx;
+  for (; cur_indiv_idx < end_indiv_idx; cur_indiv_idx++) {
+    cur_tbt_start = &(tblock_transposed[cur_indiv_idx * block_size]);
+    tbt_ptr2 = tblock_transposed;
+    for (indiv_idx2 = 0; indiv_idx2 <= cur_indiv_idx; indiv_idx2++) {
+      acc = 0;
+      for (bidx = 0; bidx < block_size; bidx++) {
+        acc += cur_tbt_start[bidx] * (*tbt_ptr2++);
+      }
+      *write_ptr += acc;
+      write_ptr++;
+    }
+  }
+  THREAD_RETURN;
+}
+
+void
+domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_diag, double* tblock, double* tblock_transposed, int block_size, uint32_t indiv_ct)
+{
+  // tblock[] can have an arbitrary number of distinct values, so can't use
+  // bit hacks
+  int ii;
+  double ycheck;
+  uintptr_t ulii;
+  for (ii=0; ii<block_size; ii++) {  
+    ycheck = asum(tblock+ii*indiv_ct, indiv_ct) ;
+    if (fabs(ycheck)>.00001) fatalx("bad ycheck\n");
+  }
+  g_XTX_lower_diag = XTX_lower_diag;
+  g_tblock_transposed = tblock_transposed;
+  g_block_size = block_size;
+  if (spawn_threads(threads, block_increment_normal, thread_ct)) {
+    fatalx("Error: Failed to create thread.\n");
+    return;
+  }
+  ulii = 0;
+  block_increment_normal((void*)ulii);
+  join_threads(threads, thread_ct);
+}
+
 void
 getcolxf(double *xcol, SNP *cupt, int *xindex, int nrows, int col,
  double *xmean, double *xfancy)
