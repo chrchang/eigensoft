@@ -41,7 +41,7 @@ remaph2d(SNP **snpmarkers, int numsnps, Indiv **indivmarkers, Indiv **indm2, int
 
   int *g1, *g2 ;
   int *x1, *x2 ;
-  int *tind, tt, t, i, j, k, j1, j2 ; 
+  int tt, t, i, j, k ; 
   Indiv *indx ;
   SNP *cupt ;
   char s1[50], s2[50] ;

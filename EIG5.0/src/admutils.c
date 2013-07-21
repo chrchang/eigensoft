@@ -292,7 +292,7 @@ double malefreq(Indiv **indmarkers, int numindivs)
 {
    int i ;
    Indiv *indx ; 
-   double cmale, cfemale ;
+   double cmale ;
 
    cmale = 0 ;
    for (i=0; i<numindivs; ++i) { 
@@ -532,7 +532,7 @@ int hasharr(char **xarr, int nxarr)
 // in application ordering  matters so we hash order dependent 
 {
   
-   int hash, thash, i, n ;  
+   int hash, thash, i ;
 
    hash = 0 ;  
 
@@ -593,7 +593,7 @@ rbuff(unsigned char *buff, int num)
 {
    int wnum, wplace, rshft ;  
    unsigned char  b ;
-   static int ncall = 0 ;
+   //   static int ncall = 0 ;
  
 // ++ncall ;
 
@@ -649,7 +649,7 @@ fastdupcheck(SNP **snpmarkers, Indiv **indivmarkers, int numsnps, int numindivs)
  int *gtypes ;
  int i, j, k, n ;
  int *snphets, *indsnp, tab[15], ww[15], **codeit, *cc, g, *cbuff ; 
- int *buff, val, vv, lbuff, itry, ilo, ihi ;
+ int *buff, val, vv, lbuff, itry, ilo ;
 
  ZALLOC(gtypes, numindivs, int) ;
  ZALLOC(cbuff, 2*numindivs, int) ;
@@ -899,8 +899,7 @@ int numvalidind(Indiv **indivmarkers, int  numind)
 
 void numvalidgtallind(int *x, SNP **snpm, int numsnps, int numind) { 
 // count valids for all 
-  int n = 0 ;
-  int k, t, j ; 
+  int k, j ; 
   SNP *cupt ;
   int *z ;  
   
