@@ -221,7 +221,6 @@ getrawcolx(int **cc, SNP *cupt, int *xindex, int nrows, Indiv **indm)
 {
   int t, j, g, tt ;
   int *gg ;
-  Indiv *indx ;
   static int ncall = 0 ;
   
   ++ncall ;
@@ -546,7 +545,7 @@ double divcol(double *estn, double *estd, SNP *cupt,
    int *rawcol ;
    int k, g, i ; 
    double ya, yb, yaa, ybb, en, ed ;
-   double z, zz, h1 ;
+   double z, zz ;
 
 
    ZALLOC(rawcol, nrows, int) ;
@@ -1331,7 +1330,7 @@ void
 
 }
 
-double dohzg(double *top, double *bot, SNP **xsnplist, int *xindex, int *xtypes, 
+void dohzg(double *top, double *bot, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg)  
 
 {
@@ -1411,7 +1410,7 @@ void setblocks(int *block, int *bsize, int *nblock, SNP **snpm, int numsnps, dou
 // must have been allocated if not NULL 
 {
   int n = 0, i ;  
-  int chrom, xsize, lchrom, olds ;  
+  int chrom, xsize, lchrom, olds = 0 ;  
   double fpos, dis, gpos ;  
   SNP *cupt ;
       
@@ -2076,7 +2075,7 @@ void doinbreed(double *inb, double *inbest, double *inbsig, SNP **xsnplist, int 
 
    int a ;
    int t, k, i, col, j ; 
-   double y, jest, jsig, mean ;
+   double jest, jsig, mean ;
    SNP *cupt ;
    double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
@@ -2236,7 +2235,8 @@ dofstnumx(double *fst, double *fstest, double *fstsig, SNP **xsnplist, int *xind
    int t, k, i, col, j ; 
    double jest, jsig, mean ;
    SNP *cupt ;
-   double *top, *bot, *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
+   double *top = NULL, *bot = NULL;
+   double *djack, *wjack, *gtop, *gbot, *wbot, *wtop ;
    double **btop, **bbot, wt ;
    double *w1, *w2, *w3 ;
    double ytop, ybot ;
@@ -2458,7 +2458,7 @@ dofstnum(double *fst, double *fstest, double *fstsig, SNP **xsnplist, int *xinde
  int nrows, int ncols, int numeg, int nblocks)     
 {
 
-   dofstnumx(fst, fstest, fstsig, xsnplist, xindex, xtypes, nrows, ncols, numeg, nblocks, NULL, NO) ;
+   return dofstnumx(fst, fstest, fstsig, xsnplist, xindex, xtypes, nrows, ncols, numeg, nblocks, NULL, NO) ;
 
 }
 

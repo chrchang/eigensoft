@@ -83,7 +83,7 @@ double qcorr(double **zz, double *rho,
 void xcopy(int rp[4], int a , int b, int c, int d)  ;
 void settsc(int tpat[3][4], double tscore[3], int rpat[3][4], double rscore[3]) ;
 void printsc(int pat[3][4], double tscore[3], char **eglist, double ymin)  ;
-double dohzg(double *top, double *bot, SNP **xsnplist, int *xindex, int *xtypes, 
+void dohzg(double *top, double *bot, SNP **xsnplist, int *xindex, int *xtypes, 
    int nrows, int ncols, int numeg)  ; 
 
 void dohzgjack(double *fstest, double *fstsig, SNP **xsnplist, int *xindex, int *xtypes, 
