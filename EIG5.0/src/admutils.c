@@ -345,7 +345,11 @@ void makedir (char * dirname)
     close (fdir) ;
     return ;
    }
+#ifdef _WIN32
+   fdir = mkdir(dirname);
+#else
    fdir = mkdir(dirname,0775);
+#else
    if (fdir < 0) {  
     perror("makedir") ;
     fatalx("(makedir) directory %s not created\n") ;
