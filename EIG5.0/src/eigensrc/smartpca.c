@@ -214,6 +214,8 @@ int pubmean = YES ;  // change default
 
 double nhwfilter = -1.0;
 
+int thread_ct_config = 0;
+
 int randomfillin = NO ;
 int usepopsformissing = NO ; // if YES popmean is used for missing.  Overall mean if all missing for pop
 
@@ -727,14 +729,22 @@ int main(int argc, char **argv)
   // set the thread count.  allow the user to override this in the future
 #if _WIN32
   SYSTEM_INFO sysinfo;
-  GetSystemInfo(&sysinfo);
-  thread_ct = sysinfo.dwNumberOfProcessors;
-#else
-  i = sysconf(_SC_NPROCESSORS_ONLN);
-  if (i == -1) {
-    thread_ct = 1;
+  if (thread_ct_config <= 0) {
+    GetSystemInfo(&sysinfo);
+    thread_ct = sysinfo.dwNumberOfProcessors;
   } else {
-    thread_ct = i;
+    thread_ct = thread_ct_config;
+  }
+#else
+  if (thread_ct_config <= 0) {
+    i = sysconf(_SC_NPROCESSORS_ONLN);
+    if (i == -1) {
+      thread_ct = 1;
+    } else {
+      thread_ct = i;
+    }
+  } else {
+    thread_ct = thread_ct_config;
   }
 #endif
   if (thread_ct > 8) {
@@ -1500,6 +1510,8 @@ void readcommands(int argc, char **argv)
    getint(ph, "numchrom:",  &numchrom) ;
    getstring(ph, "xregionname:", &xregionname) ;
    getdbl(ph, "hwfilter:", &nhwfilter) ;
+
+   getint(ph, "numthreads:", &numthreads) ;
 
    printf("### THE INPUT PARAMETERS\n");
    printf("##PARAMETER NAME: VALUE\n");
