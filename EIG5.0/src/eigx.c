@@ -14,7 +14,6 @@
 #define LAPACK_COMPLEX_STRUCTURE
 #include "lapack/lapacke/include/lapacke.h"
 typedef int __CLPK_integer;
-
 #else // begin !_WIN32
 #if __LP64__
 // allow the same code to work for OS X and Linux
@@ -23,6 +22,7 @@ typedef int __CLPK_integer;
 typedef long int __CLPK_integer;
 #endif
 typedef double __CLPK_doublereal;
+#endif // end !_WIN32
 
 int dspev_(char* jobz, char* uplo, __CLPK_integer* n, __CLPK_doublereal* ap,
            __CLPK_doublereal* w, __CLPK_doublereal* z__, __CLPK_integer* ldz,
@@ -46,7 +46,6 @@ int dsygv_(__CLPK_integer* itype, char* jobz, char* uplo, __CLPK_integer* n,
            __CLPK_doublereal* a, __CLPK_integer* lda, __CLPK_doublereal* b,
            __CLPK_integer* ldb, __CLPK_doublereal* w, __CLPK_doublereal* work,
            __CLPK_integer* lwork, __CLPK_integer* info);
-#endif // end !_WIN32
 #endif // end !__APPLE__
 
 void mem_error() {
