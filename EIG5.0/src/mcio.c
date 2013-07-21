@@ -607,9 +607,6 @@ int loadsnps(SNP **snpm, SNPDATA **snpraw,
       strcpy(ss, sdpt -> cchrom) ;
     }
 
-    yf = fakedis ; 
-    yr = realdis ;
-
     // insert fake SNPs so the distance between SNPs is no greater than spacing
     while (fakedis<realdis) {  
 
