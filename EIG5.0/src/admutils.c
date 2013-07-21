@@ -814,7 +814,7 @@ int kcode(int *w, int len, int base)
  return t ;
 }
 
-int 
+void
  grabgtypes(int *gtypes, SNP *cupt, int numindivs) 
 {
 

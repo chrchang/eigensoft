@@ -166,7 +166,7 @@ void setfastdupnum(int num) ;
 void setfastdupthresh(double thresh, double kill) ;
 void killxhets(SNP **snpmarkers, Indiv **indivmarkers, int numsnps, int numindivs) ;
 void fastdupcheck(SNP **snpmarkers, Indiv **indivmarkers, int numsnps, int numindivs) ;
-int grabgtypes(int *gtypes, SNP *cupt, int numindivs) ;
+void grabgtypes(int *gtypes, SNP *cupt, int numindivs) ;
 int kcode(int *w, int len, int base) ;
 void cdup(SNP **snpm, Indiv **indm, int nsnp, int *buff, int lbuff) ;
 void printdup(SNP **snpm, int nsnp, Indiv *inda, Indiv *indb, int nmatch, int nnomatch); 
