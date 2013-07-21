@@ -2597,7 +2597,7 @@ void genopedcnt(char *gname, int **gcounts, int nsnp)   {
   int numf, snpnumber, snpnum ; 
   int k, n ;
   FILE *fff ;
-  int parity, ncols, colbase ;  
+  int parity, ncols, colbase = 6;  
 
   // gcounts already zeroed 
 
