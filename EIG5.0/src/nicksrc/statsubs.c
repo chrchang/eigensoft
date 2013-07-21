@@ -66,7 +66,7 @@ double ntail(double zval)
 
 {
   double pi,  t ;
-  double p, q, d ;
+  double q ;
 
   if (zval == 0.0) return 0.5 ;
   if (zval<0.0) return (1.0 - ntail(-zval)) ;
@@ -86,7 +86,7 @@ double ntail(double zval)
 }
 
 double zzprob(double pval) {
-  double x, dev, p, q, d, h, u ;
+  double x, dev, q, d, h, u ;
   double pi ;
    int iter ;
 
@@ -114,8 +114,8 @@ double zzprob(double pval) {
 double medchi(int *cls, int len, int *n0, int *n1, double *xtail) 
 {
 /* compute 2x2 chisq splitting at median */
- int i, m0,m1,n,m ;
- double arr[4], y, ys, p, q, d ;
+ int i, m0,m1,m ;
+ double arr[4], y, ys, q ;
  *n0 = *n1 = 0 ;
  for (i=0; i<len; i++) {
   if (cls[i]>1) continue ;
@@ -360,7 +360,6 @@ double chitest(double *a, double *p, int n)
  
  double *x, *b, *pp ;
  double y1=0.0, y2=0.0 ;
- int i ;
 
  ZALLOC(pp, n, double) ;
  if (p != NULL)
@@ -398,9 +397,9 @@ double chitest(double *a, double *p, int n)
 double zprob(double ptail) 
 /** inverse normal */
 {
-  double z, p, t, plog; 
+  double z, t, plog; 
   double ylo, yhi, ya, yb  ; 
-  int i, k ;
+  int k ;
 
  if (ztable == NULL) setzptable() ;  
  if (ptail==0.5) return 0.0 ;
@@ -1114,7 +1113,7 @@ double rtlg1(double a, double x)
 
 double rtlg2(double a, double x) 
 {
-   double y1, y2 ;
+   double y1 ;
    double yk, top, bot, t0, xam ;
    int k ;
    t0 = 0.0 ; 
@@ -1233,7 +1232,7 @@ double twnorm(double lam, double p, double n)
 double
 dotwcalc(double *lambda, int m, double *ptw, double *pzn, double *pzvar, int minm) 
 {
-  double nv, mv, tzn, tm ; 
+  double tzn, tm ; 
   double *evals ;
   double y, top, bot, zn, tw, ystat ;
   double tail, lsum ;
@@ -1548,8 +1547,8 @@ static double betacf(double a, double b, double x)
 void bpars(double *a, double *b, double mean, double var) 
 {
    
-  double x2, g, xmean, x, m, v ;  
-  double  xa, xb, ym, yv ;
+  double x, m, v ;  
+  double  xa, xb ;
 
   m = mean; v = var ;
   x = (m*(1-m)-v)/v  ;
@@ -1570,8 +1569,7 @@ void bpars(double *a, double *b, double mean, double var)
 void bmoments(double a, double b, double *mean, double *var) 
 {
    
-  double x2, g, xmean, x, m, v ;  
-  double  xa, xb, ym, yv ;
+  double x ;
 
   x = a+b ; 
   *mean = a/x ; 
@@ -1688,7 +1686,6 @@ static void weightjackx(double *est, double *sig, double mean, double *jmean, do
 
   double *tdiff, *hh, *xtau, *w1, *w2 ;  
   double jackest, yn, yvar ;  
-  int k ;
 
   if (g<=1) fatalx("(weightjack) number of blocks <= 1\n") ;
   ZALLOC(tdiff, g, double) ;
