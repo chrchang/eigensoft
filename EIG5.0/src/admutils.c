@@ -349,7 +349,7 @@ void makedir (char * dirname)
    fdir = mkdir(dirname);
 #else
    fdir = mkdir(dirname,0775);
-#else
+#endif
    if (fdir < 0) {  
     perror("makedir") ;
     fatalx("(makedir) directory %s not created\n") ;
