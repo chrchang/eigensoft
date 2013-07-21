@@ -99,7 +99,7 @@ int stringhash(char *key)
 
 #define MAXKEYLEN 512
  int xpack[MAXKEYLEN] ;
- int len, wlen, w ;
+ int len, wlen, w = 0;
  unsigned char t  ;
  int thash = 7 ;
  int jmax, jmin ;
@@ -202,7 +202,7 @@ void xloadsearch(char **ss, int n)
 
 {  
 
- ENTRY item, *pitem ; 
+ ENTRY *pitem ; 
  char  xx[8] ;
  int i ;
 
