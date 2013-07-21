@@ -4,9 +4,16 @@
 
 #include <limits.h>
 
-#define BIGINT INT_MAX   
+#define BIGINT INT_MAX
+
+#ifdef _WIN32
+#define SRAND  srand
+#define LRAND  rand
+#else
 #define SRAND  srandom
 #define LRAND  random
+#endif
+
 #define DRAND() ( (double) (random() % BIGINT) / (double) (BIGINT)) 
 #define DRAND2() ( drand2() ) 
 /* random must return random integer in range 0 to BIGINT-1  */
