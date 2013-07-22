@@ -16,7 +16,8 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 LAPACK = -framework Accelerate
 ATLAS_LAPACK = -framework Accelerate
-CFLAGS = -g -pg -I../include -O2 -Wall
+CFLAGS = -g -pg -I../include -arch x86_64 -O2 -Wall
+LDFLAGS = -arch x86_64 -I../include -pthread
 else
 ifeq ($(UNAME), MINGW32_NT-6.2)
 LAPACK = -Wl,-Bstatic -L. lapack/liblapack.a -L. lapack/librefblas.a
