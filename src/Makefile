@@ -63,8 +63,8 @@ $(NLIB):	$(NLIBOBJS)
 
 
 
-
-# ----- build EIGENSOFT 
+# ----- Windows-specific EIGENSOFT build
+ifeq ($(UNAME), MINGW32_NT-6.2)
 convertf:	convertf.o mcio.o egsubs.o admutils.o h2d.o $(ED)/exclude.o $(NLIB)
 	$(CC) $(LDFLAGS) $^ -o $@ $(MATHLIB)
 
@@ -97,7 +97,41 @@ eigenstratQTL:	$(ED)/eigenstratQTL.o
 
 pca:	$(ED)/eigsubs.o pca.o eigx.o $(NLIB)
 	gfortran -O2 -o $@ $(LDFLAGS) $^ $(LAPACK) $(MATHLIB)
+else
+# ----- OS X/Linux EIGENSOFT build
+convertf:	convertf.o mcio.o egsubs.o admutils.o h2d.o $(ED)/exclude.o $(NLIB)
+	$(CC) $(LDFLAGS) $^ -o $@ $(MATHLIB)
 
+mergeit:	mergeit.o mcio.o admutils.o $(NLIB)
+	$(CC) $(LDFLAGS) $^ -o $@ $(MATHLIB) 
+
+pcatoy: 	eigensrc/pcatoy.o eigensrc/eigsubs.o eigensrc/eigx.o $(NLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+
+smartpca:	$(ED)/smartpca.o twsubs.o mcio.o qpsubs.o admutils.o egsubs.o regsubs.o \
+		$(ED)/eigsubs.o  \
+		$(ED)/exclude.o $(ED)/smartsubs.o $(ED)/eigx.o $(NLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+
+smartrel:	$(ED)/smartrel.o twsubs.o mcio.o qpsubs.o admutils.o egsubs.o regsubs.o \
+		$(ED)/eigsubs.o $(ED)/eigx.o $(ED)/smartsubs.o $(NLIB)    
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+
+smarteigenstrat:	$(ED)/smarteigenstrat.o mcio.o admutils.o $(NLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+
+twstats:	$(ED)/twstats.o $(NLIB) 
+	$(CC) $(LDFLAGS) $^ -o $@  $(MATHLIB)
+
+eigenstrat:	$(ED)/eigenstrat.o 
+	$(CC) $(LDFLAGS) $^ -o $@  $(MATHLIB)
+
+eigenstratQTL:	$(ED)/eigenstratQTL.o 
+	$(CC) $(LDFLAGS) $^ -o $@  $(MATHLIB)
+
+pca:	$(ED)/eigsubs.o pca.o eigx.o $(NLIB)
+	$(CC) $(LDFLAGS) -o $@ $(LAPACK) $^ $(MATHLIB)
+endif
 
 
 # ----- phony targets
