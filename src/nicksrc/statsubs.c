@@ -34,7 +34,10 @@ static int twtabsize = -1 ;
 static double *twxval, *twxpdf, *twxtail ;
 
 #define TWXTABLE TWTAB  
+#if defined(_WIN32) || defined(__APPLE__)
+#else
 static char *twxtable = NULL ;
+#endif
 
 static double **bcotable = NULL ; 
 static int bcosize = -1 ;  // max val of binomial coefficient  
