@@ -693,8 +693,7 @@ int main(int argc, char **argv)
 
   ZALLOC(XTX, nrows*nrows, double) ;
   ZALLOC(evecs, nrows*nrows, double) ;
-  // if ((!usepopsformissing) && (ldregress == 0)) {
-  if (0) {
+  if ((!usepopsformissing) && (ldregress == 0)) {
     // should not use lookup table if
     // - usepopsformissing is set (since each population may have a different
     //   mean), or
@@ -716,7 +715,7 @@ int main(int argc, char **argv)
 
   ZALLOC(lambda, nrows, double) ;
   ZALLOC(esize, nrows, double) ;
-  ZALLOC(cc, (nrows < 3)? nrows : 3, double) ;
+  ZALLOC(cc, (nrows > 3)? nrows : 3, double) ;
   ZALLOC(ww, nrows, double) ;
   ZALLOC(badlist, nrows, int) ;
 
@@ -803,7 +802,6 @@ int main(int argc, char **argv)
       k= indxindex(eglist, numeg, indx -> egroup) ;
       xtypes[i] = k ;
     }
-
 
     numld = 0 ;
     lastldchrom = -1 ;
@@ -994,7 +992,6 @@ int main(int argc, char **argv)
     /* END of code to print Tracy-Widom statistics */
   }
 
-
   numeigs = MIN(numeigs, nrows) ;
   numeigs = MIN(numeigs, ncols) ;
 
@@ -1036,7 +1033,6 @@ int main(int argc, char **argv)
     }
     fclose(ovfile) ;
   }
-
 
   ZALLOC(fvecs, nrows*numeigs, double) ;
   ZALLOC(fxvecs, nrows*numeigs, double) ;
@@ -1247,13 +1243,10 @@ int main(int argc, char **argv)
   for (i = 0; i < numeg; i++) {
     xpopsize[i] = 0;
   }
-  printf("nrows: %d\n", nrows);
   for (i=0; i<nrows; i++) { 
     k = xtypes[i] ;
-    printf("%d ", k);
     ++xpopsize[k] ;
   }
-  printf("\n");
 
   for (i=0; i<numeg; i++) 
   {  
