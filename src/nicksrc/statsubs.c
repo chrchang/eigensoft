@@ -1508,6 +1508,9 @@ const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
 
 static char* next_token(char* ss)
 {
+  while (((unsigned char)(*ss)) > ' ') {
+    ss++;
+  }
   while (((unsigned char)(*ss)) <= ' ') {
     ss++;
   }
@@ -1529,7 +1532,6 @@ gettw(double x, double *tailp, double *densp)
 
   if (twtabsize == -1)  {
 #if defined(_WIN32) || defined(__APPLE__)
-    k = 161;
     twtabsize = 161;
     ZALLOC(twxval, twtabsize, double);
     ZALLOC(twxpdf, twtabsize, double);
@@ -1537,7 +1539,7 @@ gettw(double x, double *tailp, double *densp)
     xx[0] = twxval;
     xx[1] = twxtail;
     xx[2] = twxpdf;
-    read_ptr = rk_str;
+    read_ptr = (char*)rk_str;
     for (k = 0; k < twtabsize; k++) {
       read_ptr = next_token(read_ptr);
       xx[0][k] = atof(read_ptr);
