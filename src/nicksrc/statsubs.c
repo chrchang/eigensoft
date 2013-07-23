@@ -1328,20 +1328,6 @@ int jfirstgtx(int val, int *tab, int n)
  return jfgtx(tab, 0, n-1, val) ;
 }
 
-int settwxtable(char *table) 
-{
-    FILE *fff ;
-    if (twxtable != NULL) return 1 ;
-    if (table==NULL) 
-     twxtable = strdup(TWXTABLE) ; 
-    else 
-     twxtable = strdup(table) ; 
-    fff = fopen(twxtable, "r") ;
-    if (fff==NULL) return -1 ;
-    fclose(fff) ;
-    return 1 ;
-}
-
 #if defined(_WIN32) || defined(__APPLE__)
 // for precompiled binaries, just hardcode the table
 const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
@@ -1515,6 +1501,25 @@ static char* next_token(char* ss)
     ss++;
   }
   return ss;
+}
+
+int settwxtable(char *table) 
+{
+  return 1;
+}
+#else
+int settwxtable(char *table) 
+{
+    FILE *fff ;
+    if (twxtable != NULL) return 1 ;
+    if (table==NULL) 
+     twxtable = strdup(TWXTABLE) ; 
+    else 
+     twxtable = strdup(table) ; 
+    fff = fopen(twxtable, "r") ;
+    if (fff==NULL) return -1 ;
+    fclose(fff) ;
+    return 1 ;
 }
 #endif
 
