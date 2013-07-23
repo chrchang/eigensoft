@@ -1342,7 +1342,7 @@ int settwxtable(char *table)
     return 1 ;
 }
 
-#ifdef _WIN32 || __APPLE__
+#if _WIN32 || __APPLE__
 // for precompiled binaries, just hardcode the table
 const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
 "    -7.900 1.000000000 0.000000000 \n"
@@ -1506,10 +1506,9 @@ const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
 "     7.900 0.000000011 0.000000031 \n"
 "     8.000 0.000000008 0.000000023 \n";
 
-static inline char* next_num(char* ss) {
-  char cc = *ss;
-  while ((cc != '-') && ((cc < '0') || (cc > '9'))) {
-    cc = *(++ss);
+static char* next_token(char* ss) {
+  while (((unsigned char)(*ss)) <= ' ') {
+    ss++;
   }
   return ss;
 }
@@ -1523,12 +1522,12 @@ gettw(double x, double *tailp, double *densp)
      int k, n  ; 
      double x0, x1, f0, f1, f0p, f1p ;  
      double *xx[3] ;
-#ifdef _WIN32 || __APPLE__
+#if _WIN32 || __APPLE__
      char* read_ptr;
 #endif
 
   if (twtabsize == -1)  {
-#ifdef _WIN32 || __APPLE__
+#if _WIN32 || __APPLE__
     k = 161;
     twtabsize = 161;
     ZALLOC(twxval, twtabsize, double);
@@ -1539,11 +1538,11 @@ gettw(double x, double *tailp, double *densp)
     xx[2] = twxpdf;
     read_ptr = rk_str;
     for (k = 0; k < twtabsize; k++) {
-      read_ptr = next_num(read_ptr);
+      read_ptr = next_token(read_ptr);
       xx[0][k] = atof(read_ptr);
-      read_ptr = next_num(read_ptr);
+      read_ptr = next_token(read_ptr);
       xx[1][k] = atof(read_ptr);
-      read_ptr = next_num(read_ptr);
+      read_ptr = next_token(read_ptr);
       xx[2][k] = atof(read_ptr);
     }
 #else
