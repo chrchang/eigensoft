@@ -1342,7 +1342,7 @@ int settwxtable(char *table)
     return 1 ;
 }
 
-#if _WIN32 || __APPLE__
+#if defined(_WIN32) || defined(__APPLE__)
 // for precompiled binaries, just hardcode the table
 const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
 "    -7.900 1.000000000 0.000000000 \n"
@@ -1522,12 +1522,12 @@ gettw(double x, double *tailp, double *densp)
      int k, n  ; 
      double x0, x1, f0, f1, f0p, f1p ;  
      double *xx[3] ;
-#if _WIN32 || __APPLE__
+#if defined(_WIN32) || defined(__APPLE__)
      char* read_ptr;
 #endif
 
   if (twtabsize == -1)  {
-#if _WIN32 || __APPLE__
+#if defined(_WIN32) || defined(__APPLE__)
     k = 161;
     twtabsize = 161;
     ZALLOC(twxval, twtabsize, double);
