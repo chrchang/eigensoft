@@ -943,6 +943,7 @@ int main(int argc, char **argv)
 
   if (outliername != NULL) fclose(outlfile) ;
   dumpgrm(XTX, xindex, nrows,  ynumsnps, indivmarkers, numindivs, grmoutname) ;
+  printf("grm dumped\n");
 
   m = numgtz(lambda, nrows)  ;
   /* printf("matrix rank: %d\n", m) ; */
@@ -2921,9 +2922,9 @@ void dumpgrmid(char *fname, Indiv **indivmarkers, int *xindex, int numid)
   fclose(fff) ;
 }
 void
-dumpgrmbin(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  
+dumpgrmbin(double *XTX, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  
 {
-  int a, b, xa, xb ;
+  int a, b;
   double y ;
   char sss[256] ;
   char *bb ;  
@@ -2975,9 +2976,7 @@ dumpgrmbin(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarker
   bb = (char *) &yfloat ;
   for (a = 0; a < nrows; a++ ){
   for (b = 0; b <= a; b++ ){
-    xa = xindex[a] ;
-    xb = xindex[b] ;
-    y = XTX[xa*nrows+xb] / y_norm;
+    y = XTX[a*nrows+b] / y_norm; // bugfix
     yfloat = (float) y ;
     ret = write(fdes, bb, 4) ;
   }
@@ -2987,7 +2986,7 @@ dumpgrmbin(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarker
 void
 dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, int numindivs, char *grmoutname)  
 {
-  int a, b, xa, xb ;
+  int a, b;
   double y ;
   FILE *fff ;
   char sss[256] ;
@@ -2998,7 +2997,7 @@ dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, 
   dumpgrmid(sss, indivmarkers, xindex, nrows) ;
 
   if (grmbinary) { 
-   dumpgrmbin(XTX, xindex, nrows, numsnps, indivmarkers, numindivs, grmoutname)  ;
+   dumpgrmbin(XTX, nrows, numsnps, indivmarkers, numindivs, grmoutname)  ;
    return ;
   }
 
@@ -3013,9 +3012,7 @@ dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, 
   openit(grmoutname, &fff, "w") ;
   for (a = 0; a < nrows; a++ ){
   for (b = 0; b <= a; b++ ){
-    xa = xindex[a] ;
-    xb = xindex[b] ;
-    y = XTX[xa*nrows+xb] ;
+    y = XTX[a*nrows+b] ; // bugfix: do NOT want to dereference xindex here
     fprintf(fff, "%d %d ", a+1, b+1) ;
     fprintf(fff, "%d ", numsnps) ;
     fprintf(fff, "%0.6f\n", y * y_norm_recip) ;
