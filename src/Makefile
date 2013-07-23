@@ -20,8 +20,8 @@ CFLAGS = -g -pg -I../include -arch x86_64 -O2 -Wall
 LDFLAGS = -arch x86_64 -I../include -pthread
 else
 ifeq ($(UNAME), MINGW32_NT-6.2)
-LAPACK = -Wl,-Bstatic -L. lapack/liblapack.a -L. lapack/librefblas.a
-ATLAS_LAPACK = -Wl,-Bstatic -L. lapack/liblapack.a -L. lapack/librefblas.a
+LAPACK = -Wl,-Bstatic -L. lapack/liblapack-64.a -L. lapack/librefblas-64.a
+ATLAS_LAPACK = -Wl,-Bstatic -L. lapack/liblapack-64.a -L. lapack/librefblas-64.a
 LDFLAGS = -pg -I../include -static-libgcc
 endif
 endif
