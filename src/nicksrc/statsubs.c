@@ -1506,7 +1506,8 @@ const char rk_str[] = "    -8.000 1.000000000 0.000000000 \n"
 "     7.900 0.000000011 0.000000031 \n"
 "     8.000 0.000000008 0.000000023 \n";
 
-static char* next_token(char* ss) {
+static char* next_token(char* ss)
+{
   while (((unsigned char)(*ss)) <= ' ') {
     ss++;
   }
@@ -1557,8 +1558,8 @@ gettw(double x, double *tailp, double *densp)
     xx[2] = twxpdf ;
     twtabsize = getxx(xx, k, 3, twxtable) ;
 
-  }
 #endif
+  }
   n = twtabsize ;
 
      k = firstgtx(x, twxval, n) ;    
