@@ -2769,8 +2769,13 @@ THREAD_RET_TYPE block_increment_normal(void* arg) {
 void
 domult_increment_normal(pthread_t* threads, uint32_t thread_ct, double* XTX_lower_tri, double* tblock, int block_size, uint32_t indiv_ct)
 {
-  // tblock[] can have an arbitrary number of distinct values, so can't use
-  // bit hacks
+  // General case: tblock[] can have an arbitrary number of distinct values, so
+  // can't use bit hacks.
+  //
+  // This multithreaded implementation is pretty far from optimal; if more
+  // speed is needed, use the DGEMM function from a vendor-optimized BLAS.
+  // (Sum of k outer products is just equal to the product of a n*k and a k*n
+  // matrix.)
   int ii;
   double ycheck;
   uintptr_t ulii;
