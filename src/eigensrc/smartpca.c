@@ -942,7 +942,7 @@ int main(int argc, char **argv)
   }
 
   if (outliername != NULL) fclose(outlfile) ;
-  dumpgrm(XTX, xindex, nrows,  ynumsnps, indivmarkers, numindivs, grmoutname) ; 
+  dumpgrm(XTX, xindex, nrows,  ynumsnps, indivmarkers, numindivs, grmoutname) ;
 
   m = numgtz(lambda, nrows)  ;
   /* printf("matrix rank: %d\n", m) ; */
@@ -3003,11 +3003,11 @@ dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, 
   }
 
   // Re-adjust values based on diagonal normalization
-  double y_norm ;
+  double y_norm_recip ;
   double *d ;
   ZALLOC(d, nrows, double) ;
   getdiag(d, XTX, nrows) ;
-  y_norm = asum(d,nrows) / (double) nrows ;
+  y_norm_recip = ((double)nrows) / asum(d,nrows);
   free(d) ;
 
   openit(grmoutname, &fff, "w") ;
@@ -3018,7 +3018,7 @@ dumpgrm(double *XTX, int *xindex, int nrows, int numsnps, Indiv **indivmarkers, 
     y = XTX[xa*nrows+xb] ;
     fprintf(fff, "%d %d ", a+1, b+1) ;
     fprintf(fff, "%d ", numsnps) ;
-    fprintf(fff, "%0.6f\n", y/y_norm) ;
+    fprintf(fff, "%0.6f\n", y * y_norm_recip) ;
   }
   }
   fclose(fff) ;
