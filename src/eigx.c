@@ -88,7 +88,7 @@ void eigx_(double* pmat, double* ev, __CLPK_integer* n) {
   free(z);
   free(work);
   if (info) {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
     fprintf(stderr, "INFO: %d\n", info);
 #else
     fprintf(stderr, "INFO: %ld\n", info);
@@ -109,7 +109,7 @@ void eigxv_(double* pmat, double* eval, double* evec, __CLPK_integer* n) {
   dspev_(&jobz, &uplo, n, pmat, eval, evec, &ldz, work, &info);
   free(work);
   if (info) {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
     fprintf(stderr, "INFO: %d\n", info);
 #else
     fprintf(stderr, "INFO: %ld\n", info);
@@ -125,13 +125,13 @@ void cdc_(double* pmat, __CLPK_integer* n) {
   dpotrf_(&uplo, n, pmat, &lda, &info);
   if (info) {
     if (info < 0) {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
       fprintf(stderr, "error (CDC): illegal argument %d\n", -info);
 #else
       fprintf(stderr, "error (CDC): illegal argument %ld\n", -info);
 #endif
     } else {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
       fprintf(stderr, "error (CDC): minor not positive definite %d\n", info);
 #else
       fprintf(stderr, "error (CDC): minor not positive definite %ld\n", info);
@@ -212,19 +212,19 @@ void geneigsolve_(double* pmat, double* qmat, double* eval, __CLPK_integer* n) {
   free(work);
   if (info && (info <= 2 * (*n))) {
     if (info < 0) {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
       fprintf(stderr, "error (GENEIGSOLVE): illegal argument %d\n", -info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): illegal argument %ld\n", -info);
 #endif
     } else if (info <= (*n)) {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
       fprintf(stderr, "error (GENEIGSOLVE): failure to converge %d\n", info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): failure to converge %ld\n", info);
 #endif
     } else {
-#if __LP64__ || _WIN32
+#if defined(__LP64__) || defined(_WIN32)
       fprintf(stderr, "error (GENEIGSOLVE): not positive definite %d\n", info);
 #else
       fprintf(stderr, "error (GENEIGSOLVE): not positive definite %ld\n", info);
