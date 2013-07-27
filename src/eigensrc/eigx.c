@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef _WIN64
+#define __LP64__
+#endif
+
 #ifdef __APPLE__
 #include <Accelerate/Accelerate.h>
 #else

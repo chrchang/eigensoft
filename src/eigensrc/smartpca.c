@@ -111,6 +111,10 @@ regmode added
 
 */
 
+#ifdef _WIN64
+#define __LP64__
+#endif
+
 #if _WIN32
 // just in case we try a Windows port in the future
 #include <windows.h>
