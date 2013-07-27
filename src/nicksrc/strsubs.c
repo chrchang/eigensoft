@@ -22,7 +22,9 @@
 #include "strsubs.h" 
 #include "vsubs.h" 
 
+#ifndef _WIN64
 extern int errno ;
+#endif
 
 
 int oldsplitup(char *strin, char**spt, int maxpt) 
