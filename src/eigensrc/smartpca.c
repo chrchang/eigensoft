@@ -750,6 +750,11 @@ int main(int argc, char **argv)
   if (thread_ct_config <= 0) {
     GetSystemInfo(&sysinfo);
     thread_ct = sysinfo.dwNumberOfProcessors;
+    if (thread_ct > 8) {
+      // todo: investigate what the return to parallelism actually looks like;
+      // the current thread_ct default is kind of arbitrary
+      thread_ct--;
+    }
   } else {
     thread_ct = thread_ct_config;
   }
@@ -760,17 +765,16 @@ int main(int argc, char **argv)
       thread_ct = 1;
     } else {
       thread_ct = i;
+      if (thread_ct > 8) {
+	thread_ct--;
+      }
     }
   } else {
     thread_ct = thread_ct_config;
   }
 #endif
-  if (thread_ct > 8) {
-    if (thread_ct > MAX_THREADS) {
-      thread_ct = MAX_THREADS;
-    } else {
-      thread_ct--;
-    }
+  if (thread_ct > MAX_THREADS) {
+    thread_ct = MAX_THREADS;
   }
   if (thread_ct > nrows * 2) {
     thread_ct = nrows / 2;
