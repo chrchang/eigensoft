@@ -52,11 +52,12 @@ print PARFILE ("numoutlieriter: $m\n");
 print PARFILE ("numoutlierevec: $t\n");
 print PARFILE ("outliersigmathresh: $s\n");
 print PARFILE ("qtmode: $q\n");
+print PARFILE ("snpweightoutname: example.snpwt\n");
 if($specified{"w"}) { print PARFILE ("poplistname: $w\n"); }
 if($specified{"z"}) { print PARFILE ("badsnpname: $z\n"); }
 close(PARFILE);
 $command = "smartpca";          # MUST put bin directory in path
-$command .= " -p $parfile >$l";
+$command .= " -p $parfile >debug.log";
 print("$command\n");
 system("$command");
 
